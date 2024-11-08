@@ -171,6 +171,21 @@ CREATE TABLE REPRESENTER (
     FOREIGN KEY (idP) REFERENCES PROPRIETE_VALEURS(idP)
 );
 
+INSERT INTO legos.PARTIE (date_debut, date_fin, score, gagnante) 
+VALUES 
+('2024-11-08', '2024-11-08', 200, 'Nadia'),
+('2024-10-02', '2024-10-02', 150, 'Maria'),
+('2024-04-03', '2024-04-03', 120, 'Anastasia'),
+('2024-11-07', '2024-11-07', 100, 'Pavlo')
+('2024-110-07', '2024-10-07', 100, 'Tatiana');
+
+INSERT INTO legos.JOUEUSE (prenom, date_inscription, avatar) 
+VALUES 
+('Nadia', '2024-11-01', 200),
+('Maria', '2024-08-02', 150),
+('Anastasia', '2024-03-24', 120),
+('Pavlo', '2024-10-17', 100)
+('Tatiana', '2024-01-30', 100);
 
 
 INSERT INTO legos.piece VALUES (1, 1, 1, 1, '#000000');
