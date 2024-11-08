@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+<h2>Jeu Lego-Tetris!</h2>
+
+<p id="parag_description">
+Jeu est trés cool!	<br>
+	Utilisez le menu à gauche pour découvrir les fonctionnalités de ce site.
+</p>
+
+<!--Nombre d’instances pour 3 tables de votre choix --> 
+{% if REQUEST_VARS['nb_piece'] > 0 %}
+    <p>Actuellement  {{ REQUEST_VARS['nb_piece'] }} pieces disponibles</p>
+{% else %}
+    <p>Aucune pieces dans la base." </p>
+{% endif %}
+
+{% if REQUEST_VARS['nb_parties'] > 0 %}
+    <p> {{ REQUEST_VARS['nb_parties'] }} parties jouées!</p>
+{% else %}
+    <p>Aucune partie" </p>
+{% endif %}
+
+{% if REQUEST_VARS['nb_JOUEUSE'] > 0 %}
+    <p>Actuellement  {{ REQUEST_VARS['nb_JOUEUSE'] }} usageuse actives</p>
+{% else %}
+    <p>Aucune usageuse" </p>
+{% endif %}
+
+
+</html>
+<p>Que faire sur ce site ?</p>
+<ul>
+	<li>Afficher les données de la base</li>
+	<li>Ajouter une série</li>
+	<li>Rechercher une série ou une actrice</li>
+	<li>Générer un historique de votre activité sur le site</li>
+	<li>...</li>
+</ul>
+
+<div>
+	<img src="serial_critique/static/img/best_series.jpg" />
+</div>
+
+{% include 'message.html' %}
+
+{% endblock %}
