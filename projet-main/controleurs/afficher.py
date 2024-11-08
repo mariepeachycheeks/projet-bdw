@@ -23,3 +23,5 @@ critiques qui la concernent !
 REQUEST_VARS['episodes1'] = get_episodes_for_num(SESSION['CONNEXION'], 1)
 REQUEST_VARS['episodes2'] = get_episodes_for_num(SESSION['CONNEXION'], 2)
 
+"""Fonctionnalité 2""""
+
