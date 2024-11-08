@@ -33,6 +33,7 @@ Jeu est trés cool!	<br>
     <p>Nos couleurs les plus populaires</p>
     <ul>
         {% for couleur in REQUEST_VARS['top_couleur'] %}
+            <li>{{ couleur }}</li>
         {% endfor %}
     </ul>
 {% else %}
