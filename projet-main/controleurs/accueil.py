@@ -3,9 +3,14 @@ ce fichier est vide, il faudra y mettre du code (question TP5)
 """
 
 from model.model_pg import count_instances
+try:
+    res_piece = count_instances(SESSION['CONNEXION'], 'legos.piece')
+    if res_piece:
+        REQUEST_VARS['nb_piece'] = res_piece[0]
+    else:
+        print("Error: res_piece is None or empty.")
 
-res = count_instances(SESSION['CONNEXION'], 'legos.piece')
-REQUEST_VARS['nb_piece'] = res[0]
+    res_partie = count_instances(SESSION['CONNEXION'], 'legos.PARTIE')
     if res_partie:
         REQUEST_VARS['nb_parties'] = res_partie[0]
     else:
