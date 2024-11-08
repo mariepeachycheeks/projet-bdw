@@ -13,6 +13,19 @@ def count_instances(connexion, nom_table):
     return execute_select_query(connexion, query)
 
 
+'''Top-5 des couleurs ayant le plus de briques ;'''
+
+
+def top_couleurs_nb_briques(connexion, nom_table):
+    """
+    Retourne le nombre d'instances de la table nom_table
+    String nom_table : nom de la table
+    """
+    query = sql.SQL(
+        'SELECT couleur, COUNT(id) AS total_briques FROM {table}} group by couleur ORDER BY total_briques DESC LIMIT 5').format(table=sql.Identifier(nom_table))
+    return execute_select_query(connexion, query)
+
+
 def execute_select_query(connexion, query, params=[]):
     """
     Méthode générique pour exécuter une requête SELECT (qui peut retourner plusieurs instances).
