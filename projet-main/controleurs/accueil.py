@@ -21,5 +21,13 @@ try:
         REQUEST_VARS['nb_JOUEUSE'] = res_joueuses[0]
     else:
         print("Error: res_joueuses is None or empty.")
+
+    res_top_couleurs = count_instances(SESSION['CONNEXION'], 'legos.piece')
+    if res_top_couleurs:
+        REQUEST_VARS['top_couleurs'] = res_top_couleurs
+    else:
+        print("Error: res_joueuses is None or empty.")
+
+
 except Exception as e:
     print(f"An error occurred: {e}")
