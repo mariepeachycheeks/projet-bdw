@@ -28,6 +28,19 @@ Jeu est trés cool!	<br>
 {% endif %}
 
 
+<!--Top-5 des couleurs ayant le plus de briques --> 
+{% if REQUEST_VARS['top_couleur'] %}
+    <p>Nos couleurs les plus populaires</p>
+    <ul>
+        {% for couleur in REQUEST_VARS['top_couleur'] %}
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Aucune couleur</p>
+{% endif %}
+
+
+
 </html>
 <p>Que faire sur ce site ?</p>
 <ul>
