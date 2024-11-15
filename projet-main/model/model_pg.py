@@ -4,7 +4,6 @@ from logzero import logger
 import random
 
 
-
 def count_instances(connexion, nom_table):
     """
     Retourne le nombre d'instances de la table nom_table
@@ -24,7 +23,7 @@ def top_couleurs_nb_briques(connexion, nom_table):
     String nom_table : nom de la table
     """
     query = sql.SQL(
-        'SELECT couleur, COUNT(id) AS total_briques FROM {table}} group by couleur ORDER BY total_briques DESC LIMIT 5').format(table=sql.Identifier(nom_table))
+        'SELECT couleur, COUNT(id) AS total_briques FROM {table} group by couleur ORDER BY total_briques DESC LIMIT 5').format(table=sql.Identifier(nom_table))
     return execute_select_query(connexion, query)
 
 
@@ -37,11 +36,32 @@ def score_min_max(connexion, JOUEUSE, LIER, PARTIE):
 ''' Parties avec le plus petit et plus grand nombre de pièces défaussées, de pièces piochées '''
 
 
-def parties_pieces_defaussees_piochees(connexion):
+def parties_pieces_defaussees_piochees(connexion, table):
     try:
-        query = sql.SQL('SELECT j.prenom, MAX(p.score) , MIN(p.score) FROM  legos.JOUEUSE j JOIN  legos.LIER l ON j.prenom = l.prenom JOIN  legos.PARTIE p ON l.score = p.score GROUP BY  j.prenom;').format(
-            table=sql.Identifier(JOUEUSE, LIER, PARTIE))
-        return execute_select_query(connexion, query)
+        query_pioches_petite = sql.SQL('SELECT p_piochees FROM {table} ORDER BY p_piochees ASC LIMIT 1;').format(
+            table=sql.Identifier(table))
+        query_pioches_petite = execute_select_query(
+            connexion, query_pioches_petite)
+
+        query_pioches_grand = sql.SQL('SELECT p_piochees FROM {table} ORDER BY p_piochees DESC LIMIT 1;').format(
+            table=sql.Identifier(table))
+        query_pioches_grand = execute_select_query(
+            connexion, query_pioches_grand)
+
+        query_defaussees_petite = sql.SQL('SELECT p_defausees FROM {table} ORDER BY p_defausees ASC LIMIT 1;').format(
+            table=sql.Identifier(table))
+        query_defaussees_petite = execute_select_query(
+            connexion, query_defaussees_petite)
+
+        query_defaussees_grand = sql.SQL('SELECT p_defausees FROM {table} ORDER BY p_defausees DESC LIMIT 1;').format(
+            table=sql.Identifier(table))
+        query_defaussees_grand = execute_select_query(
+            connexion, query_defaussees_grand)
+        results_list = [query_pioches_petite, query_pioches_grand,
+                        query_defaussees_petite, query_defaussees_grand]
+
+        return results_list
+
     except psycopg.Error as e:
         logger.error(e)
     return None
@@ -140,7 +160,9 @@ def get_table_like(connexion, nom_table, like_pattern):
     #    like_pattern=sql.Placeholder(name=like_pattern))
     return execute_select_query(connexion, query, [motif])
 
+
 '''Fonctionnalité 2'''
+
 
 def get_random_bricks(connexion):
     query = "SELECT * FROM BRIQUE WHERE length <= %s OR width <= %s"
@@ -158,6 +180,7 @@ def get_random_bricks(connexion):
     else:
         return bricks
 
+
 def replace_selected_brick(connexion, selected_id):
     """
     Remplace une brique sélectionnée par une autre brique avec length <= 2 ou width <= 2.
@@ -170,7 +193,8 @@ def replace_selected_brick(connexion, selected_id):
     bricks = execute_select_query(connexion, query, params)
 
     if bricks is None or len(bricks) == 0:
-        logger.warning(f"No valid bricks found to replace the brick with ID {selected_id}.")
+        logger.warning(
+            f"No valid bricks found to replace the brick with ID {selected_id}.")
         return None
 
     # Choisir une brique aléatoire parmi celles disponibles
