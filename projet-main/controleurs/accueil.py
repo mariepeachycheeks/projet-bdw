@@ -1,7 +1,7 @@
 """
 ce fichier est vide, il faudra y mettre du code (question TP5)
 """
-
+from server import SESSION, REQUEST_VARS
 from model.model_pg import count_instances
 try:
     res_piece = count_instances(SESSION['CONNEXION'], 'legos.piece')
@@ -27,6 +27,13 @@ try:
         REQUEST_VARS['top_couleurs'] = res_top_couleurs
     else:
         print("Error: res_joueuses is None or empty.")
+
+    res_max_min_score = count_instances(
+        SESSION['CONNEXION'], 'legos.JOUEUSE', 'legos.LIER', 'legos.PARTIE')
+    if res_max_min_score:
+        REQUEST_VARS['max_min_score'] = res_top_couleurs
+    else:
+        print("Error: res_max_min_score is None or empty.")
 
 
 except Exception as e:
