@@ -40,6 +40,30 @@ Jeu est trés cool!	<br>
     <p>Aucune couleur</p>
 {% endif %}
 
+<!--• Pour chaque joueuse, son score minimal et son score maximal  --> 
+{% if REQUEST_VARS['max_min_score'] %}
+<table class="score-table">
+	<thead>
+		<tr>
+			<th>Player Name</th>
+			<th>Max Score</th>
+			<th>Min Score</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for item in REQUEST_VARS['top_couleur'] %}
+		<tr>
+			<td>{{ item[0] }}</td>
+			<td>{{ item[1] }}</td>
+			<td>{{ item[2] }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% else %}
+    <p>Aucune joueuse</p>
+{% endif %}
+
 
 
 </html>
