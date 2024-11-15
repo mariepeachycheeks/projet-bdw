@@ -1,22 +1,8 @@
 import psycopg
 from psycopg import sql
 from logzero import logger
-
-"""from flask import Flask, render_template, request, redirect"""
 import random
 
-"""nadia dodala:"""
-"""
-def create_connection():
-    try:
-        # Connect to PostgreSQL
-        conn = psycopg.connect("dbname=bd-project.sql user=myuser password=mypassword host=localhost")
-        logger.info("Connection to PostgreSQL successful.")
-        return conn
-    except psycopg.Error as e:
-        logger.error(f"Error connecting to PostgreSQL: {e}")
-        return None
-"""
 
 
 def count_instances(connexion, nom_table):
@@ -140,65 +126,39 @@ def get_table_like(connexion, nom_table, like_pattern):
     #    like_pattern=sql.Placeholder(name=like_pattern))
     return execute_select_query(connexion, query, [motif])
 
-
 '''Fonctionnalité 2'''
 
-''' # Function to get 4 random bricks with length or width <= 2
 def get_random_bricks(connexion):
-    cursor.execute("SELECT * FROM BRIQUE WHERE length <= 2 OR width <= 2")
-    bricks = cursor.fetchall()
+    query = "SELECT * FROM BRIQUE WHERE length <= %s OR width <= %s"
+    params = [2, 2]
+
+    # Exécuter la requête
+    bricks = execute_select_query(connexion, query, params)
+
+    if bricks is None:
+        logger.warning("No bricks found or error during fetching.")
+        return []
+
     if len(bricks) >= 4:
         return random.sample(bricks, 4)
     else:
-        return bricks  # Return whatever is available if there are fewer than 4
-
-# Function to replace a brick after selection
-
+        return bricks
 
 def replace_selected_brick(connexion, selected_id):
-    cursor.execute(
-        "SELECT * FROM BRIQUE WHERE (length <= 2 OR width <= 2) AND id != %s", (selected_id,))
-    bricks = cursor.fetchall()
-    if bricks:
-        new_brick = random.choice(bricks)
-        return new_brick
-    else:
-        return None  # If no valid bricks are found
+    """
+    Remplace une brique sélectionnée par une autre brique avec length <= 2 ou width <= 2.
+    La brique remplacée est exclue de la sélection grâce à son ID.
+    """
+    query = "SELECT * FROM BRIQUE WHERE (length <= %s OR width <= %s) AND id != %s"
+    params = [2, 2, selected_id]
 
+    # Exécuter la requête avec la méthode générique
+    bricks = execute_select_query(connexion, query, params)
 
-# Sample usage
-selected_brick = replace_selected_brick(connexion, selected_id=1)
-if selected_brick:
-    print("New brick added:", selected_brick)
-else:
-    print("No valid brick available for replacement.")
+    if bricks is None or len(bricks) == 0:
+        logger.warning(f"No valid bricks found to replace the brick with ID {selected_id}.")
+        return None
 
-
-app = Flask(__name__)
-
-# Function to simulate fetching random bricks
-
-
-def get_bricks(connexion):
-    # Fetch bricks with length or width <= 2 from the database
-    bricks = get_random_bricks()
-    return bricks
-
-
-@app.route("/")
-def index(connexion):
-    bricks = get_bricks()
-    return render_template("index.html", bricks=bricks)
-
-
-@app.route("/select-brick", methods=["POST"])
-def select_brick(connexion):
-    selected_id = int(request.form["brick_id"])
-    new_brick = replace_selected_brick(selected_id)
-    return render_template("index.html", bricks=new_brick)
-
-
-if __name__ == "__main__":
-    app.run()
-
-'''
+    # Choisir une brique aléatoire parmi celles disponibles
+    new_brick = random.choice(bricks)
+    return new_brick
