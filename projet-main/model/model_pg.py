@@ -70,9 +70,40 @@ def parties_pieces_defaussees_piochees(connexion, table):
 '''Le nombre moyen de tours, pour chaque couple (mois, année) '''
 
 
-def nmbr_moy_tours(connexion, parties, diviser, tours):
-    query = sql.SQL('SELECT EXTRACT(MONTH FROM p.date_debut) AS mois, EXTRACT(YEAR FROM p.date_debut) AS annee, COUNT(t.numero) / COUNT(DISTINCT p.date_debut) AS avg_tours FROM {parties} p JOIN {diviser} d ON p.date_debut = d.date_debut AND p.date_fin = d.date_fin JOIN {tours} t ON d.numero = t.numero GROUP BY mois, annee ORDER BY annee, mois').format(
-        table=sql.Identifier(parties, diviser, tours))
+def nmbr_moy_tours(connexion, parties, tours):
+    query = sql.SQL('SELECT EXTRACT(MONTH FROM p.date_debut) AS mois, EXTRACT(YEAR FROM p.date_debut) AS annee, COUNT(t.numero) / COUNT(DISTINCT p.date_debut) AS avg_tours FROM {parties} p JOIN {tours} t ON p.date_debut = t.date_debut AND p.date_fin = t.date_fin GROUP BY mois, annee ORDER BY annee, mois').format(
+        parties=sql.Identifier(parties),
+        tours=sql.Identifier(tours)
+    )
+    return execute_select_query(connexion, query)
+
+
+'''Top-3 des parties dans lesquelles les plus grandes pièces avec un tri
+décroissant sur le nombre de pièces utilisées '''
+
+
+def trie_nmbr_pieces_used(connexion, tours, parties):
+    query = sql.SQL('SELECT p.date_debut AS partie_date, p.date_fin AS partie_end, COUNT(t.numero) AS total_pieces_used FROM {tours} t JOIN {parties} p ON p.date_debut = t.date_debut AND p.date_fin = t.date_fin GROUP BY p.date_debut, p.date_fin ORDER BY total_pieces_used DESC LIMIT 3;').format(
+        tours=sql.Identifier(tours),
+        parties=sql.Identifier(parties)
+    )
+    return execute_select_query(connexion, query)
+
+
+def top_partie_grand_piece(connexion, tours, parties, piece):
+    query = sql.SQL('''
+        SELECT p.date_debut AS partie_date, p.date_fin AS partie_end, SUM(pi.longueur * pi.largeur) AS total_piece_size
+        FROM {tours} t
+        JOIN {parties} p ON p.date_debut = t.date_debut AND p.date_fin = t.date_fin
+        JOIN {piece} pi ON t.id = pi.id  
+        GROUP BY p.date_debut, p.date_fin
+        ORDER BY total_piece_size DESC
+        LIMIT 3;
+    ''').format(
+        tours=sql.Identifier(tours),
+        parties=sql.Identifier(parties),
+        piece=sql.Identifier(piece)
+    )
     return execute_select_query(connexion, query)
 
 
