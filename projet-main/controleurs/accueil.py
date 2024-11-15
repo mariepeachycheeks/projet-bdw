@@ -2,7 +2,7 @@
 ce fichier est vide, il faudra y mettre du code (question TP5)
 """
 from server import SESSION, REQUEST_VARS
-from model.model_pg import count_instances, parties_pieces_defaussees_piochees, top_couleurs_nb_briques, score_min_max, res_nmbr_moy_tours
+from model.model_pg import count_instances, parties_pieces_defaussees_piochees, top_couleurs_nb_briques, score_min_max, nmbr_moy_tours, top_partie_grand_piece
 try:
     res_piece = count_instances(SESSION['CONNEXION'], 'legos.piece')
     if res_piece:
@@ -46,12 +46,19 @@ try:
     else:
         print("Error: res_pieces_defaussees_piochees is None or empty.")
 
-    res_nmbr_moy_tours = parties_pieces_defaussees_piochees(
-        SESSION['CONNEXION'], 'legos.PARTIE', 'legos.DIVISER', 'legos.TOURS')
+    res_nmbr_moy_tours = nmbr_moy_tours(
+        SESSION['CONNEXION'], 'legos.PARTIE',  'legos.TOURS')
     if res_nmbr_moy_tours:
         REQUEST_VARS['nmbr_moy_tours'] = res_nmbr_moy_tours
     else:
         print("Error: res_nmbr_moy_tours is None or empty.")
+
+    res_top3_parties = top_partie_grand_piece(
+        SESSION['CONNEXION'], 'legos.PARTIE',  'legos.TOURS', 'legos.piece')
+    if res_top3_parties:
+        REQUEST_VARS['top3_parties'] = res_top3_parties
+    else:
+        print("Error: res_top3_parties is None or empty.")
 
 
 except Exception as e:
