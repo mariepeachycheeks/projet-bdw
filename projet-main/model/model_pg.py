@@ -43,8 +43,22 @@ def top_couleurs_nb_briques(connexion, nom_table):
 
 
 def score_min_max(connexion, JOUEUSE, LIER, PARTIE):
-    query = sql.SQL('SELECT j.prenom, MAX(p.score) , MIN(p.score) FROM  legos.JOUEUSE j JOIN  legos.LIER l ON j.prenom = l.prenom JOIN  legos.PARTIE p ON l.score = p.score GROUP BY  j.prenom;').format(table=sql.Identifier(JOUEUSE, LIER, PARTIE))
+    query = sql.SQL('SELECT j.prenom, MAX(p.score) , MIN(p.score) FROM  legos.JOUEUSE j JOIN  legos.LIER l ON j.prenom = l.prenom JOIN  legos.PARTIE p ON l.score = p.score GROUP BY  j.prenom;').format(
+        table=sql.Identifier(JOUEUSE, LIER, PARTIE))
     return execute_select_query(connexion, query)
+
+
+''' Parties avec le plus petit et plus grand nombre de pièces défaussées, de pièces piochées '''
+
+
+def parties_pieces_defaussees_piochees(connexion):
+    try:
+        query = sql.SQL('SELECT j.prenom, MAX(p.score) , MIN(p.score) FROM  legos.JOUEUSE j JOIN  legos.LIER l ON j.prenom = l.prenom JOIN  legos.PARTIE p ON l.score = p.score GROUP BY  j.prenom;').format(
+            table=sql.Identifier(JOUEUSE, LIER, PARTIE))
+        return execute_select_query(connexion, query)
+    except psycopg.Error as e:
+        logger.error(e)
+    return None
 
 
 def execute_select_query(connexion, query, params=[]):
