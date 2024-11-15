@@ -107,6 +107,19 @@ Jeu est trés cool!	<br>
     <p>Aucune score</p>
 {% endif %}
 
+<!--Top-3 des parties dans lesquelles les plus grandes pièces (longueur × largeur) ont été placées, a --> 
+{% if REQUEST_VARS['top3_parties'] %}
+    <p>Top-3 des parties dans lesquelles les plus grandes pièces (longueur × largeur) ont été placées</p>
+    <ul>
+        {% for partie in REQUEST_VARS['top3_parties'] %}
+            <li>{{ top3_parties[0] }} - {{ top3_parties[1] }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Aucune partie</p>
+{% endif %}
+
+
 </html>
 <p>Que faire sur ce site ?</p>
 <ul>
