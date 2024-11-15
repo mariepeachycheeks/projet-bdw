@@ -115,6 +115,8 @@ CREATE TABLE PARTIE (
     date_fin DATE,
     score INT,
     gagnante VARCHAR(50),
+    p_defaussees INT,  ---J'ai alternée le tab initial ici
+    p_piochees INT,
     PRIMARY KEY (date_debut, date_fin)
 );
 
@@ -171,10 +173,19 @@ CREATE TABLE REPRESENTER (
     FOREIGN KEY (idP) REFERENCES PROPRIETE_VALEURS(idP)
 );
 
-INSERT INTO legos.PARTIE (date_debut, date_fin, score, gagnante) 
+CREATE TABLE legos.PIECE_TRACKING (
+    tracking_id SERIAL PRIMARY KEY,
+    date_debut DATE,  
+    date_fin DATE,
+    pieces_choisies INT ,
+    pieces_sautees INT ,
+    FOREIGN KEY (date_debut, date_fin) REFERENCES legos.PARTIE(date_debut, date_fin)
+);
+
+INSERT INTO legos.PARTIE (date_debut, date_fin, score, gagnante, p_defaussees, p_piochees ) 
 VALUES 
-('2024-11-08', '2024-11-08', 200, 'Nadia'),
-('2024-10-02', '2024-10-02', 150, 'Maria');
+('2024-11-08', '2024-11-08', 200, 'Nadia', 10, 8),
+('2024-10-02', '2024-10-02', 150, 'Maria', 4, 8);
 -- ('2024-04-03', '2024-04-03', 120, 'Anastasia'),
 -- ('2024-11-07', '2024-11-07', 100, 'Pavlo'),
 -- ('2024-10-07', '2024-10-07', 100, 'Tatiana');  -- Fixed date format
