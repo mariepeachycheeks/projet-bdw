@@ -138,7 +138,7 @@ CREATE TABLE TOURS (
     description TEXT
 );
 
-CREATE TABLE DEVISER (
+CREATE TABLE DIVISER (
     numero INT,
     date_debut DATE,
     date_fin DATE,
@@ -173,14 +173,6 @@ CREATE TABLE REPRESENTER (
     FOREIGN KEY (idP) REFERENCES PROPRIETE_VALEURS(idP)
 );
 
-CREATE TABLE legos.PIECE_TRACKING (
-    tracking_id SERIAL PRIMARY KEY,
-    date_debut DATE,  
-    date_fin DATE,
-    pieces_choisies INT ,
-    pieces_sautees INT ,
-    FOREIGN KEY (date_debut, date_fin) REFERENCES legos.PARTIE(date_debut, date_fin)
-);
 
 INSERT INTO legos.PARTIE (date_debut, date_fin, score, gagnante, p_defaussees, p_piochees ) 
 VALUES 
@@ -211,7 +203,7 @@ VALUES
 (1),
 (2);
 
-INSERT INTO legos.DEVISER (numero, date_debut, date_fin) 
+INSERT INTO legos.DIVISER (numero, date_debut, date_fin) 
 VALUES 
 (1, '2024-11-08', '2024-11-08'),
 (2, '2024-10-02', '2024-10-02');
