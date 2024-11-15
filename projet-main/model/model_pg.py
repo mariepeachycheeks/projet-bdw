@@ -42,6 +42,11 @@ def top_couleurs_nb_briques(connexion, nom_table):
     return execute_select_query(connexion, query)
 
 
+def score_min_max(connexion, JOUEUSE, LIER, PARTIE):
+    query = sql.SQL('SELECT j.prenom, MAX(p.score) , MIN(p.score) FROM  legos.JOUEUSE j JOIN  legos.LIER l ON j.prenom = l.prenom JOIN  legos.PARTIE p ON l.score = p.score GROUP BY  j.prenom;').format(table=sql.Identifier(JOUEUSE, LIER, PARTIE))
+    return execute_select_query(connexion, query)
+
+
 def execute_select_query(connexion, query, params=[]):
     """
     Méthode générique pour exécuter une requête SELECT (qui peut retourner plusieurs instances).
@@ -138,8 +143,7 @@ def get_table_like(connexion, nom_table, like_pattern):
 
 '''Fonctionnalité 2'''
 
-
-# Function to get 4 random bricks with length or width <= 2
+''' # Function to get 4 random bricks with length or width <= 2
 def get_random_bricks(connexion):
     cursor.execute("SELECT * FROM BRIQUE WHERE length <= 2 OR width <= 2")
     bricks = cursor.fetchall()
@@ -196,3 +200,5 @@ def select_brick(connexion):
 
 if __name__ == "__main__":
     app.run()
+
+'''
