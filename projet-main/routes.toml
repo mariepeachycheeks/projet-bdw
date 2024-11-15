@@ -13,22 +13,22 @@ url = "afficher"
 controleur = "controleurs/afficher.py"
 template = "afficher.html"
 
-[[routes]]
-url = "rechercher"
-controleur = "controleurs/rechercher.py"
-template = "rechercher.html"
+#[[routes]]
+#url = "rechercher"
+#controleur = "controleurs/rechercher.py"
+#template = "rechercher.html"
 
-[[routes]]
-url = "historique"
-controleur = "controleurs/historique.py"
-template = "historique.html"
+#[[routes]]
+#url = "historique"
+#controleur = "controleurs/historique.py"
+#template = "historique.html"
 
-[[routes]]
-url = "ajouter"
-controleur = "controleurs/ajouter.py"
-template = "ajouter.html"
+#[[routes]]
+#url = "ajouter"
+#controleur = "controleurs/ajouter.py"
+#template = "ajouter.html"
 
-[[routes]]
-url = "critiquer"
-controleur = "controleurs/critiques.py"
-template = "critiquer.html"
+#[[routes]]
+#url = "critiquer"
+#controleur = "controleurs/critiques.py"
+#template = "critiquer.html"
