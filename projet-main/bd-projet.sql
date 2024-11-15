@@ -110,15 +110,7 @@ CREATE TABLE ACCOMPAGNER_B (
     FOREIGN KEY (idB) REFERENCES BRIQUE(idB)
 );
 
-CREATE TABLE PARTIE (
-    date_debut DATE,
-    date_fin DATE,
-    score INT,
-    gagnante VARCHAR(50),
-    p_defaussees INT,  ---J'ai alternée le tab initial ici
-    p_piochees INT,
-    PRIMARY KEY (date_debut, date_fin)
-);
+
 
 CREATE TABLE JOUEUSE (
     prenom VARCHAR(50) PRIMARY KEY,
@@ -135,16 +127,27 @@ CREATE TABLE LIER (
 
 CREATE TABLE TOURS (
     numero INT PRIMARY KEY,
-    description TEXT
+    FOREIGN KEY (date_debut, date_fin) REFERENCES PARTIE(date_debut, date_fin)
+    FOREIGN KEY (id) REFERENCES piece(id)
 );
 
-CREATE TABLE DIVISER (
+/*CREATE TABLE DIVISER (
     numero INT,
     date_debut DATE,
     date_fin DATE,
     PRIMARY KEY (numero, date_debut, date_fin),
     FOREIGN KEY (numero) REFERENCES TOURS(numero),
-    FOREIGN KEY (date_debut, date_fin) REFERENCES PARTIE(date_debut, date_fin)
+    
+);*/
+
+CREATE TABLE PARTIE (
+    date_debut DATE,
+    date_fin DATE,
+    score INT,
+    gagnante VARCHAR(50),
+    p_defaussees INT,  ---J'ai alternée le tab initial ici
+    p_piochees INT,
+    PRIMARY KEY (date_debut, date_fin)
 );
 
 CREATE TABLE CONFIGURATION (
@@ -198,10 +201,10 @@ VALUES
 (150, 'Maria'),
 (120, 'Nadia');
 
-INSERT INTO legos.TOURS (numero) 
+INSERT INTO legos.TOURS (numero, id) 
 VALUES 
-(1),
-(2);
+(1, 1),
+(2, 1);
 
 INSERT INTO legos.DIVISER (numero, date_debut, date_fin) 
 VALUES 
