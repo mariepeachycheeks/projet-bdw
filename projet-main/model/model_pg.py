@@ -67,6 +67,15 @@ def parties_pieces_defaussees_piochees(connexion, table):
     return None
 
 
+'''Le nombre moyen de tours, pour chaque couple (mois, année) '''
+
+
+def nmbr_moy_tours(connexion, parties, diviser, tours):
+    query = sql.SQL('SELECT EXTRACT(MONTH FROM p.date_debut) AS mois, EXTRACT(YEAR FROM p.date_debut) AS annee, COUNT(t.numero) / COUNT(DISTINCT p.date_debut) AS avg_tours FROM {parties} p JOIN {diviser} d ON p.date_debut = d.date_debut AND p.date_fin = d.date_fin JOIN {tours} t ON d.numero = t.numero GROUP BY mois, annee ORDER BY annee, mois').format(
+        table=sql.Identifier(parties, diviser, tours))
+    return execute_select_query(connexion, query)
+
+
 def execute_select_query(connexion, query, params=[]):
     """
     Méthode générique pour exécuter une requête SELECT (qui peut retourner plusieurs instances).
