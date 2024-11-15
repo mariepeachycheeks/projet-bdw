@@ -64,6 +64,24 @@ Jeu est trés cool!	<br>
     <p>Aucune joueuse</p>
 {% endif %}
 
+<!-- • Parties avec le plus petit et plus grand nombre de pièces défaussées, de pièces piochées ;-->
+	
+
+{% if REQUEST_VARS['piochees_min']  %}
+<p>Partie avec le plus petit nombre de pièces piochées {%  REQUEST_VARS['piochees_min'] %}</p>         
+{% endif %}
+
+{% if REQUEST_VARS['piochees_max']  %}
+<p>Partie avec le plus grand nombre de pièces piochées {%  REQUEST_VARS['piochees_max'] %}</p>         
+{% endif %}
+
+{% if REQUEST_VARS['defaussees_min']  %}
+<p>Partie avec le plus grand nombre de pièces défaussées {%  REQUEST_VARS['defaussees_min'] %}</p>         
+{% endif %}
+
+{% if REQUEST_VARS['piochees_max']  %}
+<p>Partie avec le plus petit nombre de pièces défaussées {%  REQUEST_VARS['defaussees_max'] %}</p>         
+{% endif %}
 
 
 </html>
