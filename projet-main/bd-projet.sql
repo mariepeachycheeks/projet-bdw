@@ -174,19 +174,36 @@ CREATE TABLE REPRESENTER (
 INSERT INTO legos.PARTIE (date_debut, date_fin, score, gagnante) 
 VALUES 
 ('2024-11-08', '2024-11-08', 200, 'Nadia'),
-('2024-10-02', '2024-10-02', 150, 'Maria'),
-('2024-04-03', '2024-04-03', 120, 'Anastasia'),
-('2024-11-07', '2024-11-07', 100, 'Pavlo')
-('2024-110-07', '2024-10-07', 100, 'Tatiana');
+('2024-10-02', '2024-10-02', 150, 'Maria');
+-- ('2024-04-03', '2024-04-03', 120, 'Anastasia'),
+-- ('2024-11-07', '2024-11-07', 100, 'Pavlo'),
+-- ('2024-10-07', '2024-10-07', 100, 'Tatiana');  -- Fixed date format
 
+-- Corrected INSERT for JOUEUSE table
 INSERT INTO legos.JOUEUSE (prenom, date_inscription, avatar) 
 VALUES 
-('Nadia', '2024-11-01', 200),
-('Maria', '2024-08-02', 150),
-('Anastasia', '2024-03-24', 120),
-('Pavlo', '2024-10-17', 100)
-('Tatiana', '2024-01-30', 100);
+('Nadia', '2024-11-01', NULL),  
+('Maria', '2024-08-02', NULL);
+-- ('Anastasia', '2024-03-24', 'avatar3.png'),
+-- ('Pavlo', '2024-10-17', 'avatar4.png'),s
+-- ('Tatiana', '2024-01-30', 'avatar5.png');
 
+INSERT INTO legos.LIER (score, prenom) 
+VALUES 
+(200, 'Nadia'),
+(199, 'Maria'),
+(150, 'Maria'),
+(120, 'Nadia');
+
+INSERT INTO legos.TOURS (numero) 
+VALUES 
+(1),
+(2);
+
+INSERT INTO legos.DEVISER (numero, date_debut, date_fin) 
+VALUES 
+(1, '2024-11-08', '2024-11-08'),
+(2, '2024-10-02', '2024-10-02');
 
 INSERT INTO legos.piece VALUES (1, 1, 1, 1, '#000000');
 INSERT INTO legos.piece VALUES (2, 2, 1, 1, '#000000');
