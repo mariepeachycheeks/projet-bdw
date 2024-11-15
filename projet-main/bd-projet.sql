@@ -185,19 +185,19 @@ CREATE TABLE legos.PIECE_TRACKING (
 INSERT INTO legos.PARTIE (date_debut, date_fin, score, gagnante, p_defaussees, p_piochees ) 
 VALUES 
 ('2024-11-08', '2024-11-08', 200, 'Nadia', 10, 8),
-('2024-10-02', '2024-10-02', 150, 'Maria', 4, 8);
--- ('2024-04-03', '2024-04-03', 120, 'Anastasia'),
--- ('2024-11-07', '2024-11-07', 100, 'Pavlo'),
--- ('2024-10-07', '2024-10-07', 100, 'Tatiana');  -- Fixed date format
+('2024-10-02', '2024-10-02', 150, 'Maria', 4, 8),
+('2024-04-03', '2024-04-03', 120, 'Anastasia', 20, 12),
+('2024-11-07', '2024-11-07', 100, 'Pavlo', 10, 11),
+('2024-10-07', '2024-10-07', 100, 'Tatiana', 11, 4);  
 
 -- Corrected INSERT for JOUEUSE table
 INSERT INTO legos.JOUEUSE (prenom, date_inscription, avatar) 
 VALUES 
 ('Nadia', '2024-11-01', NULL),  
-('Maria', '2024-08-02', NULL);
--- ('Anastasia', '2024-03-24', 'avatar3.png'),
--- ('Pavlo', '2024-10-17', 'avatar4.png'),s
--- ('Tatiana', '2024-01-30', 'avatar5.png');
+('Maria', '2024-08-02', NULL),
+('Anastasia', '2024-03-24', NULL),
+('Pavlo', '2024-10-17', NULL),
+('Tatiana', '2024-01-30', NULL);
 
 INSERT INTO legos.LIER (score, prenom) 
 VALUES 
