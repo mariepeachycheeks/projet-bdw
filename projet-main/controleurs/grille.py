@@ -23,14 +23,28 @@ critiques qui la concernent !
 REQUEST_VARS['episodes1'] = get_episodes_for_num(SESSION['CONNEXION'], 1)
 REQUEST_VARS['episodes2'] = get_episodes_for_num(SESSION['CONNEXION'], 2)
 
+
+
 """Fonctionnalité 2""""
 
 REQUEST_VARS['piece'] = get_random_bricks(SESSION['CONNEXION'])
+
 initialize_pioche(SESSION['CONNEXION'], 4)
 
-selected_id = REQUEST_VARS.get('selected_id')
+selected_id = REQUEST_VARS['selected_id']
 
 if selected_id:
     REQUEST_VARS['piece'] = replace_selected_brick(SESSION['CONNEXION'], selected_id)
 else:
     logger.error("Selected brick ID is missing.")
+
+
+"""Fonctionnalité 4""""
+
+if POST and "submit" in POST:
+
+    width=POST["width"]
+ 
+    height=POST["height"]
+
+    generate_random_grid(SESSION['CONNEXION'], width, height)
