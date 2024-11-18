@@ -25,3 +25,12 @@ REQUEST_VARS['episodes2'] = get_episodes_for_num(SESSION['CONNEXION'], 2)
 
 """Fonctionnalité 2""""
 
+REQUEST_VARS['piece'] = get_random_bricks(SESSION['CONNEXION'])
+initialize_pioche(SESSION['CONNEXION'], 4)
+
+selected_id = REQUEST_VARS.get('selected_id')
+
+if selected_id:
+    REQUEST_VARS['piece'] = replace_selected_brick(SESSION['CONNEXION'], selected_id)
+else:
+    logger.error("Selected brick ID is missing.")
