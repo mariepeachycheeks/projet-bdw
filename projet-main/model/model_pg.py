@@ -204,26 +204,44 @@ def get_table_like(connexion, nom_table, like_pattern):
 
 '''Fonctionnalité 2'''
 
-#easy level for small breaks
-def get_random_bricks(connexion):
-    query = "SELECT * FROM legos.piece WHERE length <= %s OR width <= %s"
+
+"""Les 4 briques sont choisies aléatoirement dans la BD, mais uniquement parmi les briques qui ont une
+longueur ou une largeur inférieure ou égale à 2 ;
+• La hauteur des briques n’est pas utilisée ;
+• Quand une brique est sélectionnée par la joueuse, on complète la pioche avec une nouvelle brique choisie
+aléatoirement dans la BD (aussi avec une largeur ou longueur <= 2)."""
+
+
+#niveau facile
+
+
+def get_random_brick(connexion):
+
+    query= SELECT * FROM piece WHERE longueur <= %s OR largeur <= %s ORDER BY RAND() LIMIT 1;
+
     params = [2, 2]
 
-    # Exécuter la requête
-    bricks = execute_select_query(connexion, query, params)
+    
+    brick = execute_select_query(connexion, query, params)
+return brick
+
+
+'''
+#controleur
 
     if bricks is None:
-        logger.warning("No bricks found or error during fetching.")
+        logger.warning("Il y a plus de bricks dans BD")
         return []
 
     if len(bricks) >= 4:
         return random.sample(bricks, 4)
-    else:
-        return bricks
+    
+
+        
 
 
-# Liste globale représentant la pioche (au niveau du jeu)
-pioche = []  # Cette liste peut être remplie au départ avec les IDs de briques valides de la BD
+
+
 
 
 def initialize_pioche(connexion, nombre_briques=4):
@@ -236,23 +254,18 @@ def initialize_pioche(connexion, nombre_briques=4):
     :param nombre_briques: Le nombre de briques à ajouter dans la pioche
     """
     try:
-        # Initialiser la pioche
+        
         while len(pioche) < nombre_briques:
 
-            # Récupérer 4 briques aléatoires avec la fonction get_random_bricks
+           
             bricks = get_random_bricks(connexion)
             
             if bricks:
-                # Ajouter les IDs des briques récupérées à la pioche
+                
                 pioche.extend([brick['id'] for brick in bricks])
 
-            # S'assurer que la pioche ne dépasse pas le nombre de briques souhaité
-             pioche[:] = pioche[:nombre_briques]      
-
-        logger.info(f"Pioche initialisée avec {len(pioche)} briques.")
-    
-    except Exception as e:
-        logger.error(f"Error initializing the pioche: {e}")
+     except Exception as e:
+        logger.error(e)
 
 
 def replace_selected_brick(connexion, selected_id):
@@ -261,34 +274,34 @@ def replace_selected_brick(connexion, selected_id):
     La brique remplacée est exclue de la sélection grâce à son ID.
     """
     try:
-        query = "SELECT * FROM legos.piece WHERE (length <= %s OR width <= %s) AND id != %s"
+        query = "SELECT * FROM piece WHERE (longueur <= %s OR largeur <= %s) AND id != %s"
         params = [2, 2, selected_id]
 
-        # Exécuter la requête pour obtenir des briques valides
+        
         bricks = execute_select_query(connexion, query, params)
 
         if bricks is None or len(bricks) == 0:
             logger.warning(f"No valid bricks found to replace the brick with ID {selected_id}.")
             return None
 
-        # Choisir une brique aléatoire parmi celles disponibles
+        
         new_brick = random.choice(bricks)
 
-        # Ajouter l'ID de la nouvelle brique dans la pioche (la liste globale)
-        pioche.append(new_brick['id'])  # Ajouter l'ID de la brique à la pioche
+       
+        pioche.append(new_brick['id'])  
 
-        # Retirer l'ID de la brique remplacée (si nécessaire)
+        # Retirer l'ID de la brique remplacée 
         if selected_id in pioche:
             pioche.remove(selected_id)
             
-        # Retourner la nouvelle brique
+        
         return new_brick
 
     except Exception as e:
-        logger.error(f"Error during the brick replacement: {e}")
+        logger.error(e)
         return None
 
-
+'''
 
 
 
@@ -296,7 +309,7 @@ def replace_selected_brick(connexion, selected_id):
 
 
 
-        def generate_random_grid(width, height):
+ def generate_random_grid(width, height):
     total_cells = width * height
 
     #Le nombre de cases cibles est un nombre aléatoire compris entre 10% et 20% du nombre total de cases ;
