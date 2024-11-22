@@ -13,10 +13,10 @@ url = "grille"
 controleur = "controleurs/grille.py"
 template = "grille.html"
 
-#[[routes]]
-#url = "rechercher"
-#controleur = "controleurs/rechercher.py"
-#template = "rechercher.html"
+[[routes]]
+url = "generate"
+controleur = "controleurs/grille.py"
+template = "grille_base.html"
 
 #[[routes]]
 #url = "historique"
