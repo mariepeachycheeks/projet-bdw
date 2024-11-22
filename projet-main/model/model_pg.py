@@ -91,7 +91,7 @@ def trie_nmbr_pieces_used(connexion, tours, parties):
 
 
 def top_partie_grand_piece(connexion):
-    query = '''SELECT p.date_debut AS partie_date, p.date_fin AS partie_end, 
+    query = '''SELECT p.date_debut AS partie_date, p.date_fin AS partie_end,
 SUM(pi.longueur * pi.largeur) AS total_piece_size
 FROM tours t
 JOIN piece pi USING(id)
@@ -205,21 +205,27 @@ def get_random_bricks(connexion):
     query = "SELECT * FROM legos.piece WHERE length <= %s OR width <= %s"
     params = [2, 2]
 
-    # Exécuter la requête
-    bricks = execute_select_query(connexion, query, params)
+    brick = execute_select_query(connexion, query, params)
+
+    return brick
+
+
+'''
+#controleur
 
     if bricks is None:
-        logger.warning("No bricks found or error during fetching.")
+        logger.warning("Il y a plus de bricks dans BD")
         return []
 
     if len(bricks) >= 4:
         return random.sample(bricks, 4)
-    else:
-        return bricks
 
 
-# Liste globale représentant la pioche (au niveau du jeu)
-pioche = []  # Cette liste peut être remplie au départ avec les IDs de briques valides de la BD
+
+
+
+
+
 
 
 def initialize_pioche(connexion, nombre_briques=4):
@@ -232,18 +238,18 @@ def initialize_pioche(connexion, nombre_briques=4):
     :param nombre_briques: Le nombre de briques à ajouter dans la pioche
     """
     try:
-        # Initialiser la pioche
+
         while len(pioche) < nombre_briques:
 
-            # Récupérer 4 briques aléatoires avec la fonction get_random_bricks
+
             bricks = get_random_bricks(connexion)
 
             if bricks:
-                # Ajouter les IDs des briques récupérées à la pioche
+
                 pioche.extend([brick['id'] for brick in bricks])
 
             # S'assurer que la pioche ne dépasse pas le nombre de briques souhaité
-            # pioche[:] = pioche[:nombre_briques]
+             pioche[:] = pioche[:nombre_briques]
 
         logger.info(f"Pioche initialisée avec {len(pioche)} briques.")
 
@@ -257,10 +263,10 @@ def replace_selected_brick(connexion, selected_id):
     La brique remplacée est exclue de la sélection grâce à son ID.
     """
     try:
-        query = "SELECT * FROM legos.piece WHERE (length <= %s OR width <= %s) AND id != %s"
+        query = "SELECT * FROM piece WHERE (longueur <= %s OR largeur <= %s) AND id != %s"
         params = [2, 2, selected_id]
 
-        # Exécuter la requête pour obtenir des briques valides
+
         bricks = execute_select_query(connexion, query, params)
 
         if bricks is None or len(bricks) == 0:
@@ -268,13 +274,13 @@ def replace_selected_brick(connexion, selected_id):
                 f"No valid bricks found to replace the brick with ID {selected_id}.")
             return None
 
-        # Choisir une brique aléatoire parmi celles disponibles
+
         new_brick = random.choice(bricks)
 
-        # Ajouter l'ID de la nouvelle brique dans la pioche (la liste globale)
-        pioche.append(new_brick['id'])  # Ajouter l'ID de la brique à la pioche
 
-        # Retirer l'ID de la brique remplacée (si nécessaire)
+        pioche.append(new_brick['id'])
+
+        # Retirer l'ID de la brique remplacée
         if selected_id in pioche:
             pioche.remove(selected_id)
 
@@ -282,14 +288,19 @@ def replace_selected_brick(connexion, selected_id):
         return new_brick
 
     except Exception as e:
-        logger.error(f"Error during the brick replacement: {e}")
+        logger.error(e)
         return None
 
 
+
+
+
+'''
+
 '''Fonctionnalité 4'''
 
-
-def generate_random_grid(width, height):
+'''
+        def generate_random_grid(width, height):
     total_cells = width * height
 
     # Le nombre de cases cibles est un nombre aléatoire compris entre 10% et 20% du nombre total de cases ;
@@ -308,9 +319,10 @@ def generate_random_grid(width, height):
     max_attempts = 100  # Nombre maximal d'essais pour ajouter une nouvelle cible
     attempts = 0
 
-    '''Pour chaque case cible à ajouter, choisir une direction aléatoire (parmi haut, bas, gauche, droite) et vérifier
-si la case correspondante (première case cible + direction choisie) est valide (i.e., dans la grille et case
-vide) : si oui, la transformer en case cible et répéter, sinon choisir une autre direction ;'''
+    '''
+'''Pour chaque case cible à ajouter, choisir une direction aléatoire(parmi haut, bas, gauche, droite) et vérifier
+si la case correspondante(première case cible + direction choisie) est valide(i.e., dans la grille et case
+vide): si oui, la transformer en case cible et répéter, sinon choisir une autre direction; 
 
     while len(targets) < num_targets:
         current_target = random.choice(targets)
@@ -321,11 +333,12 @@ vide) : si oui, la transformer en case cible et répéter, sinon choisir une aut
             new_x = current_target[0] + dx
             new_y = current_target[1] + dy
 
-         # '''Gérer les situations exceptionnelles (e.g., pas suffisamment de cases cibles car le motif est en forme de
+         # '''
+'''Gérer les situations exceptionnelles(e.g., pas suffisamment de cases cibles car le motif est en forme de
            # ”spirale”).'''
 
-        if 0 <= new_x < height and 0 <= new_y < width and grid[new_x][new_y] == "empty":
-            grid[new_x][new_y] = "target"
+''' if 0 <= new_x < height and 0 <= new_y < width and grid[new_x][new_y] == "empty":
+            grid[new_x][new_y]="target"
             targets.append((new_x, new_y))
             break
         else:
@@ -336,4 +349,4 @@ vide) : si oui, la transformer en case cible et répéter, sinon choisir une aut
                 print("Échec de la génération des cibles après plusieurs tentatives.")
                 break
 
-    return grid
+            return grid'''
