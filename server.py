@@ -230,11 +230,8 @@ class WebServer(HTTPServer):
         return False
 
     def extract_routes_from_file(self, routes_file):
-        """
-        Read the routes file (list of dicts) and check/transform the routes as a dict of tuples
-        routes_file: file path for routes
-        Returns: a dictionary object containing routes as {url1: (controleur1, template1), url2: (controleur2, template2), ...}
-        """
+        '''Read the routes file (list of dicts) and check/transform the routes as a dict of tuples
+        routes_file: file path for routes Returns: a dictionary object containing routes as {url1: (controleur1, template1), url2: (controleur2, template2), ...}'''
         output_routes = dict()
         check_file = self.check_exists_file(routes_file)
         if not check_file:  # if no route file, exit
@@ -252,7 +249,7 @@ class WebServer(HTTPServer):
             else:
                 output_routes[url] = (controleur_filepath, template)
         logger.info(f"Fichier {routes_file} : {
-                    len(output_routes)} routes trouvÃ©es")
+                    len(output_routes)} routes trouvées")
         return output_routes
 
     def get_connexion(self, host, username, password, db, schema, port):
