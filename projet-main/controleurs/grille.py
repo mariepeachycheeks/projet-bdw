@@ -1,28 +1,11 @@
+import random
 from model.model_pg import get_instances, get_episodes_for_num
-from controleurs.includes import add_activity
 
 
-add_activity(SESSION['HISTORIQUE'], "affichage des données")
+# from controleurs.includes import add_activity
 
-# récupérer les séries
-REQUEST_VARS['series'] = get_instances(SESSION['CONNEXION'], 'series')
 
-# récupérer les actrices
-REQUEST_VARS['actrices'] = get_instances(SESSION['CONNEXION'], 'actrices')
-
-REQUEST_VARS['critiques'] = get_instances(SESSION['CONNEXION'], 'critiques')
-
-"""
-À vous de jouer : lister les critiques en vous inspirant du code ci-dessus.
-Vous pourrez plus tard améliorer le code en affichant chaque série avec les
-critiques qui la concernent !
-"""
-
-# récupérer les épisodes 1 et 2
-# TODO avec psycopg3, utiliser une requête préparée
-REQUEST_VARS['episodes1'] = get_episodes_for_num(SESSION['CONNEXION'], 1)
-REQUEST_VARS['episodes2'] = get_episodes_for_num(SESSION['CONNEXION'], 2)
-
+# add_activity(SESSION['HISTORIQUE'], "affichage des données")
 
 '''Fonctionnalité 2'''
 
@@ -48,15 +31,15 @@ else:
 
 
 '''doma screen '''
-
+'''
 pioche = []
 
 REQUEST_VARS['piece'] = b
 
 
 if b is None:
-        logger.warning("Il y a plus de bricks dans BD")
-        # return []
+    logger.warning("Il y a plus de bricks dans BD")
+    # return []
 
 
 if 'pioche' not in SESSION:
@@ -66,23 +49,11 @@ if 'pioche' not in SESSION:
 
         if b in SESSION['pioche']:
 
-         SESSION['pioche'].remove(b)
+            SESSION['pioche'].remove(b)
 
-     SESSION['pioche'].extend(get_random_brick(SESSION['CONNEXION'], 1))
+    SESSION['pioche'].extend(get_random_brick(SESSION['CONNEXION'], 1))
+    '''
 
-
-
-"""Fonctionnalité 4"""
-
-if POST and "submit" in POST:
-
-    width=POST["width"]
- 
-    height=POST["height"]
-
-    grid = generate_random_grid(width, height)
- 
-    print(grid)  
 
 def generate_random_grid(width, height):
     total_cells = width * height
@@ -111,27 +82,39 @@ def generate_random_grid(width, height):
         for dx, dy in directions:
             new_x = current_target[0] + dx
             new_y = current_target[1] + dy
-    
-    if 0 <= new_x < height and 0 <= new_y < width and grid[new_x][new_y] == "empty":
-        grid[new_x][new_y]="target"
-        targets.append((new_x, new_y))
-        #break
-    else:
+
+            if 0 <= new_x < height and 0 <= new_y < width and grid[new_x][new_y] == "empty":
+                grid[new_x][new_y] = "target"
+                targets.append((new_x, new_y))
+                break
+        else:
             # Si on a essayé toutes les directions sans succès, on incrémente le nombre d'essais
-        attempts += 1
+            attempts += 1
             # Si trop d'essais ont échoué, on sort de la boucle
-        if attempts >= max_attempts:
-            print("Échec de la génération des cibles après plusieurs tentatives.")
-            #break
+            if attempts >= max_attempts:
+                print("Échec de la génération des cibles après plusieurs tentatives.")
+                break
 
     return grid
+
+
+"""Fonctionnalité 4"""
+
+if POST and "submit" in POST:
+
+    width = POST["width"]
+
+    height = POST["height"]
+
+    grid = generate_random_grid(width, height)
+
+    print(grid)
+
+
 '''Pour chaque case cible à ajouter, choisir une direction aléatoire(parmi haut, bas, gauche, droite) et vérifier
 si la case correspondante(première case cible + direction choisie) est valide(i.e., dans la grille et case
 vide): si oui, la transformer en case cible et répéter, sinon choisir une autre direction; '''
 
-    
 
-         
 '''Gérer les situations exceptionnelles(e.g., pas suffisamment de cases cibles car le motif est en forme de
            # ”spirale”).'''
-
