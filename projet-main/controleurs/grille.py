@@ -1,19 +1,17 @@
-from model.model_pg import get_instances, get_episodes_for_num, add_activity
-
+from model.model_pg import initialize_pioche, get_random_brick, add_activity
 
 add_activity(SESSION['HISTORIQUE'], "affichage des données")
 
 """Fonctionnalité 2"""
 
-
 REQUEST_VARS['piece'] = get_random_brick(SESSION['CONNEXION'])
 
-if piece is None:
+if REQUEST_VARS['piece'] is None:
     logger.warning("Il y a plus de bricks dans BD")
-    # return []
 
 
-initialize_pioche(SESSION['CONNEXION'], 4)
+# initialisé pioche avec 4 bricks
+REQUEST_VARS['pioche'] = initialize_pioche(SESSION['CONNEXION'], 4)
 
 selected_id = REQUEST_VARS['selected_id']
 
