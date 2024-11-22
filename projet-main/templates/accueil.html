@@ -1,139 +1,109 @@
-{% extends "base.html" %}
-
-{% block main_content %}
+{% extends "base.html" %} {% block main_content %}
 <h2>Jeu Lego-Tetris!</h2>
 
 <p id="parag_description">
-Jeu est trés cool!	<br>
-	Utilisez le menu à gauche pour découvrir les fonctionnalités de ce site.
+  Jeu est trés cool! <br />
+  Utilisez le menu à gauche pour découvrir les fonctionnalités de ce site.
 </p>
-
-<!--Nombre d’instances pour 3 tables de votre choix --> 
-{% if REQUEST_VARS['nb_piece'] > 0 %}
-    <p>Actuellement  {{ REQUEST_VARS['nb_piece'] }} pieces disponibles</p>
+<!--Nombre d’instances pour 3 tables de votre choix -->
+{% if REQUEST_VARS['nb_piece'][0] > 0 %}
+<p>Actuellement {{ REQUEST_VARS['nb_piece'][0] }} pieces disponibles</p>
 {% else %}
-    <p>Aucune pieces dans la base." </p>
-{% endif %}
+<p>Aucune pieces dans la base."</p>
 
-{% if REQUEST_VARS['nb_parties'] > 0 %}
-    <p> {{ REQUEST_VARS['nb_parties'] }} parties jouées!</p>
+{% endif %} {% if REQUEST_VARS['nb_parties'][0] > 0 %}
+<p>{{ REQUEST_VARS['nb_parties'] [0]}} parties jouées!</p>
 {% else %}
-    <p>Aucune partie" </p>
-{% endif %}
-
-{% if REQUEST_VARS['nb_JOUEUSE'] > 0 %}
-    <p>Actuellement  {{ REQUEST_VARS['nb_JOUEUSE'] }} usageuse actives</p>
+<p>Aucune partie"</p>
+{% endif %} {% if REQUEST_VARS['nb_JOUEUSE'][0] > 0 %}
+<p>Actuellement {{ REQUEST_VARS['nb_JOUEUSE'][0] }} usageuse actives</p>
 {% else %}
-    <p>Aucune usageuse" </p>
+<p>Aucune usageuse"</p>
 {% endif %}
 
+<!--Top-5 des couleurs ayant le plus de briques -->
 
-<!--Top-5 des couleurs ayant le plus de briques --> 
-{% if REQUEST_VARS['top_couleur'] %}
-    <p>Nos couleurs les plus populaires</p>
-    <ul>
-        {% for couleur in REQUEST_VARS['top_couleur'] %}
-            <li>{{ couleur }}</li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>Aucune couleur</p>
-{% endif %}
-
-<!--• Pour chaque joueuse, son score minimal et son score maximal  --> 
-{% if REQUEST_VARS['max_min_score'] %}
-<table class="score-table">
-	<thead>
-		<tr>
-			<th>Player Name</th>
-			<th>Max Score</th>
-			<th>Min Score</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for item in REQUEST_VARS['top_couleur'] %}
-		<tr>
-			<td>{{ item[0] }}</td>
-			<td>{{ item[1] }}</td>
-			<td>{{ item[2] }}</td>
-		</tr>
-		{% endfor %}
-	</tbody>
-</table>
-{% else %}
-    <p>Aucune joueuse</p>
-{% endif %}
-
-<!-- • Parties avec le plus petit et plus grand nombre de pièces défaussées, de pièces piochées ;-->
-	
-
-{% if REQUEST_VARS['piochees_min']  %}
-<p>Partie avec le plus petit nombre de pièces piochées {%  REQUEST_VARS['piochees_min'] %}</p>         
-{% endif %}
-
-{% if REQUEST_VARS['piochees_max']  %}
-<p>Partie avec le plus grand nombre de pièces piochées {%  REQUEST_VARS['piochees_max'] %}</p>         
-{% endif %}
-
-{% if REQUEST_VARS['defaussees_min']  %}
-<p>Partie avec le plus grand nombre de pièces défaussées {%  REQUEST_VARS['defaussees_min'] %}</p>         
-{% endif %}
-
-{% if REQUEST_VARS['piochees_max']  %}
-<p>Partie avec le plus petit nombre de pièces défaussées {%  REQUEST_VARS['defaussees_max'] %}</p>         
-{% endif %}
-
-<!--- • Le nombre moyen de tours, pour chaque couple (mois, année) -->
-{% if REQUEST_VARS['nmbr_moy_tours'] %}
-<table class="score-table">
-	<thead>
-		<tr>
-			<th>Mois</th>
-			<th>Année</th>
-			<th>Score moyen</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for item in REQUEST_VARS['nmbr_moy_tours'] %}
-		<tr>
-			<td>{{ item[0] }}</td>
-			<td>{{ item[1] }}</td>
-			<td>{{ item[2] }}</td>
-		</tr>
-		{% endfor %}
-	</tbody>
-</table>
-{% else %}
-    <p>Aucune score</p>
-{% endif %}
-
-<!--Top-3 des parties dans lesquelles les plus grandes pièces (longueur × largeur) ont été placées, a --> 
-{% if REQUEST_VARS['top3_parties'] %}
-    <p>Top-3 des parties dans lesquelles les plus grandes pièces (longueur × largeur) ont été placées</p>
-    <ul>
-        {% for partie in REQUEST_VARS['top3_parties'] %}
-            <li>{{ top3_parties[0] }} - {{ top3_parties[1] }}</li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>Aucune partie</p>
-{% endif %}
-
-
-</html>
-<p>Que faire sur ce site ?</p>
+<p>Nos couleurs les plus populaires</p>
 <ul>
-	<li>Afficher les données de la base</li>
-	<li>Ajouter une série</li>
-	<li>Rechercher une série ou une actrice</li>
-	<li>Générer un historique de votre activité sur le site</li>
-	<li>...</li>
+  {% for couleur in REQUEST_VARS['top_couleurs'] %}
+  <li>{{ couleur[0]}}</li>
+  {% endfor %}
 </ul>
 
-<div>
-	<img src="serial_critique/static/img/best_series.jpg" />
-</div>
+<!--• Pour chaque joueuse, son score minimal et son score maximal  -->
 
-{% include 'message.html' %}
+<table class="score-table">
+  <thead>
+    <tr>
+      <th>Player Name</th>
+      <th>Max Score</th>
+      <th>Min Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in REQUEST_VARS['max_min_score'] %}
+    <tr>
+      <td>{{ item[0] }}</td>
+      <td>{{ item[1] }}</td>
+      <td>{{ item[2] }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
-{% endblock %}
+<!-- • Parties avec le plus petit et plus grand nombre de pièces défaussées, de pièces piochées ;-->
+
+<p>
+  Partie avec le plus petit nombre de pièces piochées {{
+  REQUEST_VARS['piochees_min'] }}
+</p>
+
+<p>
+  Partie avec le plus grand nombre de pièces piochées {{
+  REQUEST_VARS['piochees_max'] }}
+</p>
+
+<p>
+  Partie avec le plus grand nombre de pièces défaussées {{
+  REQUEST_VARS['defaussees_min'] }}
+</p>
+
+<p>
+  Partie avec le plus petit nombre de pièces défaussées {{
+  REQUEST_VARS['defaussees_max'] }}
+</p>
+
+<!--- • Le nombre moyen de tours, pour chaque couple (mois, année) -->
+
+<table class="score-table">
+  <thead>
+    <tr>
+      <th>Mois</th>
+      <th>Année</th>
+      <th>Score moyen</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in REQUEST_VARS['nmbr_moy_tours'] %}
+    <tr>
+      <td>{{ item[0] }}</td>
+      <td>{{ item[1] }}</td>
+      <td>{{ item[2] }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!--Top-3 des parties dans lesquelles les plus grandes pièces (longueur × largeur) ont été placées, a -->
+
+<p>
+  Top-3 des parties dans lesquelles les plus grandes pièces (longueur × largeur)
+  ont été placées
+</p>
+<ul>
+  {% for partie in REQUEST_VARS['top3_parties'] %}
+  <li>{{ top3_parties[0] }} - {{ top3_parties[1] }}</li>
+  {% endfor %}
+</ul>
+
+{% include 'message.html' %} {% endblock %}
