@@ -10,6 +10,16 @@ hauteur float,
 couleur varchar(20)
 );
 
+CREATE TABLE brique (
+idB serial primary key,
+nom varchar(20),
+forme varchar(20),
+longueur integer,
+largeur integer,
+hauteur float,
+couleur varchar(20)
+);
+
 CREATE TABLE type (
     nom VARCHAR(50) PRIMARY KEY
 );
@@ -185,7 +195,6 @@ VALUES
 ('2024-11-07', '2024-11-07', 100, 'Pavlo', 10, 11),
 ('2024-10-07', '2024-10-07', 100, 'Tatiana', 11, 4);  
 
--- Corrected INSERT for JOUEUSE table
 INSERT INTO legos.JOUEUSE (prenom, date_inscription, avatar) 
 VALUES 
 ('Nadia', '2024-11-01', NULL),  
@@ -201,15 +210,17 @@ VALUES
 (150, 'Maria'),
 (120, 'Nadia');
 
-INSERT INTO legos.TOURS (numero, id) 
+INSERT INTO legos.TOURS (numero,date_debut, date_fin, id) 
 VALUES 
-(1, 1),
-(2, 1);
+(1,  '2024-11-08', '2024-11-08', 1),
+(2, '2024-10-02', '2024-10-02', 1);
 
 INSERT INTO legos.DIVISER (numero, date_debut, date_fin) 
 VALUES 
 (1, '2024-11-08', '2024-11-08'),
 (2, '2024-10-02', '2024-10-02');
+
+
 
 INSERT INTO legos.piece VALUES (1, 1, 1, 1, '#000000');
 INSERT INTO legos.piece VALUES (2, 2, 1, 1, '#000000');
@@ -1493,3 +1504,6 @@ INSERT INTO legos.piece VALUES (1279, 10, 12, 0.33, '#ff0000');
 INSERT INTO legos.piece VALUES (1280, 12, 12, 0.33, '#ff0000');
 
 
+INSERT INTO brique (idB, nom, forme, longueur, largeur, hauteur, couleur)
+SELECT id, NULL, NULL, longueur, largeur, hauteur, couleur
+FROM piece;
