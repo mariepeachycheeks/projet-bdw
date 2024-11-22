@@ -1,0 +1,81 @@
+
+
+
+
+
+
+{% if REQUEST_VARS['max_min_score'] %}
+{% else %}
+    <p>Aucune joueuse</p>
+{% endif %}
+
+<!-- • Parties avec le plus petit et plus grand nombre de pièces défaussées, de pièces piochées ;-->
+	
+
+{% if REQUEST_VARS['piochees_min']  %}
+<p>Partie avec le plus petit nombre de pièces piochées {%  REQUEST_VARS['piochees_min'] %}</p>         
+{% endif %}
+
+{% if REQUEST_VARS['piochees_max']  %}
+<p>Partie avec le plus grand nombre de pièces piochées {%  REQUEST_VARS['piochees_max'] %}</p>         
+{% endif %}
+
+{% if REQUEST_VARS['defaussees_min']  %}
+<p>Partie avec le plus grand nombre de pièces défaussées {%  REQUEST_VARS['defaussees_min'] %}</p>         
+{% endif %}
+
+{% if REQUEST_VARS['piochees_max']  %}
+<p>Partie avec le plus petit nombre de pièces défaussées {%  REQUEST_VARS['defaussees_max'] %}</p>         
+{% endif %}
+
+<!--- • Le nombre moyen de tours, pour chaque couple (mois, année) -->
+{% if REQUEST_VARS['nmbr_moy_tours'] %}
+<table class="score-table">
+	<thead>
+		<tr>
+			<th>Mois</th>
+			<th>Année</th>
+			<th>Score moyen</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for item in REQUEST_VARS['nmbr_moy_tours'] %}
+		<tr>
+			<td>{{ item[0] }}</td>
+			<td>{{ item[1] }}</td>
+			<td>{{ item[2] }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% else %}
+    <p>Aucune score</p>
+{% endif %}
+
+<!--Top-3 des parties dans lesquelles les plus grandes pièces (longueur × largeur) ont été placées, a --> 
+{% if REQUEST_VARS['top3_parties'] %}
+    <p>Top-3 des parties dans lesquelles les plus grandes pièces (longueur × largeur) ont été placées</p>
+    <ul>
+        {% for partie in REQUEST_VARS['top3_parties'] %}
+            <li>{{ top3_parties[0] }} - {{ top3_parties[1] }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Aucune partie</p>
+{% endif %}
+
+
+</html>
+<p>Que faire sur ce site ?</p>
+<ul>
+	<li>Afficher les données de la base</li>
+	<li>Ajouter une série</li>
+	<li>Rechercher une série ou une actrice</li>
+	<li>Générer un historique de votre activité sur le site</li>
+	<li>...</li>
+</ul>
+
+<div>
+	<img src="serial_critique/static/img/best_series.jpg" />
+</div>
+

@@ -48,17 +48,17 @@ def parties_pieces_defaussees_piochees(connexion, table):
         query_pioches_grand = execute_select_query(
             connexion, query_pioches_grand)
 
-        query_defaussees_petite = sql.SQL('SELECT p_defausees FROM {table} ORDER BY p_defausees ASC LIMIT 1;').format(
+        query_defaussees_petite = sql.SQL('SELECT p_defaussees FROM {table} ORDER BY p_defaussees ASC LIMIT 1;').format(
             table=sql.Identifier(table))
         query_defaussees_petite = execute_select_query(
             connexion, query_defaussees_petite)
 
-        query_defaussees_grand = sql.SQL('SELECT p_defausees FROM {table} ORDER BY p_defausees DESC LIMIT 1;').format(
+        query_defaussees_grand = sql.SQL('SELECT p_defaussees FROM {table} ORDER BY p_defaussees DESC LIMIT 1;').format(
             table=sql.Identifier(table))
         query_defaussees_grand = execute_select_query(
             connexion, query_defaussees_grand)
-        results_list = [query_pioches_petite, query_pioches_grand,
-                        query_defaussees_petite, query_defaussees_grand]
+        results_list = [query_pioches_petite[0], query_pioches_grand[0],
+                        query_defaussees_petite[0], query_defaussees_grand[0]]
 
         return results_list
 
@@ -90,20 +90,15 @@ def trie_nmbr_pieces_used(connexion, tours, parties):
     return execute_select_query(connexion, query)
 
 
-def top_partie_grand_piece(connexion, tours, parties, piece):
-    query = sql.SQL('''
-        SELECT p.date_debut AS partie_date, p.date_fin AS partie_end, SUM(pi.longueur * pi.largeur) AS total_piece_size
-        FROM {tours} t
-        JOIN {parties} p ON p.date_debut = t.date_debut AND p.date_fin = t.date_fin
-        JOIN {piece} pi ON t.id = pi.id  
-        GROUP BY p.date_debut, p.date_fin
-        ORDER BY total_piece_size DESC
-        LIMIT 3;
-    ''').format(
-        tours=sql.Identifier(tours),
-        parties=sql.Identifier(parties),
-        piece=sql.Identifier(piece)
-    )
+def top_partie_grand_piece(connexion):
+    query = '''SELECT p.date_debut AS partie_date, p.date_fin AS partie_end,
+SUM(pi.longueur * pi.largeur) AS total_piece_size
+FROM tours t
+JOIN piece pi USING(id)
+JOIN partie p ON p.date_debut = t.date_debut AND p.date_fin = t.date_fin
+GROUP BY p.date_debut, p.date_fin
+ORDER BY total_piece_size DESC
+LIMIT 3;'''
     return execute_select_query(connexion, query)
 
 
@@ -201,29 +196,27 @@ def get_table_like(connexion, nom_table, like_pattern):
     return execute_select_query(connexion, query, [motif])
 
 
-
 '''Fonctionnalité 2'''
 
-
-"""Les 4 briques sont choisies aléatoirement dans la BD, mais uniquement parmi les briques qui ont une
-longueur ou une largeur inférieure ou égale à 2 ;
-• La hauteur des briques n’est pas utilisée ;
-• Quand une brique est sélectionnée par la joueuse, on complète la pioche avec une nouvelle brique choisie
-aléatoirement dans la BD (aussi avec une largeur ou longueur <= 2)."""
+# easy level for small breaks
 
 
-#niveau facile
+def get_random_bricks(connexion):
+    try:
+        query = "SELECT * FROM legos.piece WHERE length <= %s OR width <= %s"
+        params = [2, 2]
+        bricks = execute_select_query(connexion, query, params)
 
+        if not bricks:
+            logger.warning(
+                "Aucune brique valide n'a été trouvée dans la base de données.")
+            return []
 
-def get_random_brick(connexion):
-
-    query= SELECT * FROM piece WHERE longueur <= %s OR largeur <= %s ORDER BY RAND() LIMIT 1;
-
-    params = [2, 2]
-
-    
-    brick = execute_select_query(connexion, query, params)
-return brick
+        # Retourner un nombre aléatoire limité de briques (max_briques)
+        return random.sample(bricks, 4, 4)
+    except Exception as e:
+        logger.error(f"Erreur lors de la récupération des briques: {e}")
+        return []
 
 
 '''
@@ -235,13 +228,8 @@ return brick
 
     if len(bricks) >= 4:
         return random.sample(bricks, 4)
-    
 
-        
-
-
-
-
+'''
 
 
 def initialize_pioche(connexion, nombre_briques=4):
@@ -249,23 +237,20 @@ def initialize_pioche(connexion, nombre_briques=4):
     Remplir la pioche avec des briques valides, choisies aléatoirement.
     La pioche est initialisée avec un nombre de briques aléatoires qui respectent
     les conditions de largeur ou longueur <= 2.
-    
+
     :param connexion: Connexion à la base de données
     :param nombre_briques: Le nombre de briques à ajouter dans la pioche
     """
+    pioche = []
     try:
-        
         while len(pioche) < nombre_briques:
-
-           
             bricks = get_random_bricks(connexion)
-            
             if bricks:
-                
                 pioche.extend([brick['id'] for brick in bricks])
-
-     except Exception as e:
-        logger.error(e)
+        logger.info(f"Pioche initialisée avec {len(pioche)} briques.")
+    except Exception as e:
+        logger.error(f"Error initializing the pioche: {e}")
+    return pioche
 
 
 def replace_selected_brick(connexion, selected_id):
@@ -277,58 +262,55 @@ def replace_selected_brick(connexion, selected_id):
         query = "SELECT * FROM piece WHERE (longueur <= %s OR largeur <= %s) AND id != %s"
         params = [2, 2, selected_id]
 
-        
         bricks = execute_select_query(connexion, query, params)
 
         if bricks is None or len(bricks) == 0:
-            logger.warning(f"No valid bricks found to replace the brick with ID {selected_id}.")
+            logger.warning(
+                f"No valid bricks found to replace the brick with ID {selected_id}.")
             return None
 
-        
         new_brick = random.choice(bricks)
 
-       
-        pioche.append(new_brick['id'])  
+        pioche.append(new_brick['id'])
 
-        # Retirer l'ID de la brique remplacée 
+        # Retirer l'ID de la brique remplacée
         if selected_id in pioche:
             pioche.remove(selected_id)
-            
-        
+
+        # Retourner la nouvelle brique
         return new_brick
 
     except Exception as e:
         logger.error(e)
         return None
 
-'''
-
-
 
 '''Fonctionnalité 4'''
 
-
-
- def generate_random_grid(width, height):
+'''
+        def generate_random_grid(width, height):
     total_cells = width * height
 
-    #Le nombre de cases cibles est un nombre aléatoire compris entre 10% et 20% du nombre total de cases ;
-    num_targets = random.randint(int(0.1 * total_cells), int(0.2 * total_cells)) 
+    # Le nombre de cases cibles est un nombre aléatoire compris entre 10% et 20% du nombre total de cases ;
+    num_targets = random.randint(
+        int(0.1 * total_cells), int(0.2 * total_cells))
 
     # Initialiser une grille vide
     grid = [["empty" for _ in range(width)] for _ in range(height)]
 
     # Sélectionner aléatoirement une première case cible ;
-    first_target = (random.randint(0, height - 1), random.randint(0, width - 1))
+    first_target = (random.randint(0, height - 1),
+                    random.randint(0, width - 1))
     grid[first_target[0]][first_target[1]] = "target"
 
     targets = [first_target]
     max_attempts = 100  # Nombre maximal d'essais pour ajouter une nouvelle cible
     attempts = 0
 
-    '''Pour chaque case cible à ajouter, choisir une direction aléatoire (parmi haut, bas, gauche, droite) et vérifier
-si la case correspondante (première case cible + direction choisie) est valide (i.e., dans la grille et case
-vide) : si oui, la transformer en case cible et répéter, sinon choisir une autre direction ;'''
+    '''
+'''Pour chaque case cible à ajouter, choisir une direction aléatoire(parmi haut, bas, gauche, droite) et vérifier
+si la case correspondante(première case cible + direction choisie) est valide(i.e., dans la grille et case
+vide): si oui, la transformer en case cible et répéter, sinon choisir une autre direction; 
 
     while len(targets) < num_targets:
         current_target = random.choice(targets)
@@ -338,15 +320,15 @@ vide) : si oui, la transformer en case cible et répéter, sinon choisir une aut
         for dx, dy in directions:
             new_x = current_target[0] + dx
             new_y = current_target[1] + dy
- 
 
-          '''Gérer les situations exceptionnelles (e.g., pas suffisamment de cases cibles car le motif est en forme de
-           ”spirale”).'''
+         # '''
+'''Gérer les situations exceptionnelles(e.g., pas suffisamment de cases cibles car le motif est en forme de
+           # ”spirale”).'''
 
-            if 0 <= new_x < height and 0 <= new_y < width and grid[new_x][new_y] == "empty":
-                grid[new_x][new_y] = "target"
-                targets.append((new_x, new_y))
-                break
+''' if 0 <= new_x < height and 0 <= new_y < width and grid[new_x][new_y] == "empty":
+            grid[new_x][new_y]="target"
+            targets.append((new_x, new_y))
+            break
         else:
             # Si on a essayé toutes les directions sans succès, on incrémente le nombre d'essais
             attempts += 1
@@ -355,4 +337,4 @@ vide) : si oui, la transformer en case cible et répéter, sinon choisir une aut
                 print("Échec de la génération des cibles après plusieurs tentatives.")
                 break
 
-    return grid
+            return grid'''

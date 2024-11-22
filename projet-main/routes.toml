@@ -9,7 +9,7 @@ controleur = "controleurs/accueil.py"
 template = "accueil.html"
 
 [[routes]]
-url = ""
+url = "grille"
 controleur = "controleurs/grille.py"
 template = "grille.html"
 
