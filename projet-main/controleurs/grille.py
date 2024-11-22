@@ -25,7 +25,7 @@ REQUEST_VARS['episodes2'] = get_episodes_for_num(SESSION['CONNEXION'], 2)
 
 
 
-"""Fonctionnalité 2""""
+"""Fonctionnalité 2
 
 
 REQUEST_VARS['piece'] = get_random_brick(SESSION['CONNEXION'])
@@ -44,7 +44,7 @@ if selected_id:
     REQUEST_VARS['piece'] = replace_selected_brick(SESSION['CONNEXION'], selected_id)
 else:
     logger.error("Selected brick ID is missing.")
-
+"""
 
 
 
@@ -82,4 +82,9 @@ if POST and "submit" in POST:
  
     height=POST["height"]
 
-    generate_random_grid(SESSION['CONNEXION'], width, height)
+   grid = generate_random_grid(width, height)
+
+   
+    print(grid)  
+
+ python server.py
