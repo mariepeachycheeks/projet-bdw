@@ -136,3 +136,28 @@ font-size: 25px;
     background-color: #f1f1f1;
 }
 
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(8, 50px); /* 8 colonnes de 50px */
+    grid-template-rows: repeat(9, 50px);   /* 9 lignes de 50px */
+    gap: 2px; /* Espacement entre les cellules */
+    background-color: #ddd;
+}
+
+.grid-item {
+    width: 50px;
+    height: 50px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+}
+
+.target {
+    background: repeating-linear-gradient(
+        45deg,
+        #cfcfcf,
+        #cfcfcf 10px,
+        #fff 10px,
+        #fff 20px
+    );
+}
