@@ -21,7 +21,8 @@ from shutil import rmtree
 
 # module global variables (directly used by views and templates)
 SESSION = dict()  # session content is persistent between request
-REQUEST_VARS = dict()  # request variables are not persistent (only for the current request)
+# request variables are not persistent (only for the current request)
+REQUEST_VARS = dict()
 GET = dict()
 POST = dict()
 
@@ -34,7 +35,7 @@ class WebHandler(BaseHTTPRequestHandler):
         """
         Prepare a HTTP response for a request.
         response_code: HTTP status code - https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
-        mime_type: type du contenu de la réponse
+        mime_type: type du contenu de la rÃ©ponse
         """
         self.send_response(response_code)
         self.send_header('Content-type', mime_type)
@@ -44,7 +45,7 @@ class WebHandler(BaseHTTPRequestHandler):
         """
         Prepare a HTTP response with redirect to another URL.
         new_url : the destination URL
-        mime_type: type du contenu de la réponse
+        mime_type: type du contenu de la rÃ©ponse
         """
         self.send_response(303)  # code SEE_OTHER
         self.send_header('Location', new_url, mime_type=mime_type)
@@ -57,11 +58,14 @@ class WebHandler(BaseHTTPRequestHandler):
         Returns: a string contaaining the rendering of the template for the given route 
         """
         global SESSION, REQUEST_VARS, GET, POST
-        controleur_file = WebHandler._routes[url_path][0]  # get controller filename corresponding to url_path
-        template_name = WebHandler._routes[url_path][1]  # get template filename corresponding to url_path
+        # get controller filename corresponding to url_path
+        controleur_file = WebHandler._routes[url_path][0]
+        # get template filename corresponding to url_path
+        template_name = WebHandler._routes[url_path][1]
         with open(controleur_file) as infile:  # execute controller file
             try:
-                exec(infile.read())  # security issues, but we assume that the script is run locally only
+                # security issues, but we assume that the script is run locally only
+                exec(infile.read())
             except Exception as e:  # print controller error and exit
                 traceback.print_exc()
                 logger.error(f"Erreur ({controleur_file}) : {e}")
@@ -69,18 +73,20 @@ class WebHandler(BaseHTTPRequestHandler):
         try:  # load template filepath from template filename
             template_file = self.server.env.get_template(template_name)
         except (TemplateNotFound, UndefinedError, TemplateError) as e:  # print template error and exit
-            logger.error(f"Template non trouvé ({e.message})")
+            logger.error(f"Template non trouvÃ© ({e.message})")
             sys.exit(2)
         except TemplateSyntaxError as e:  # print template syntax error and exit
-            logger.error(f"Erreur de syntaxe ({e.filename}, ligne {e.lineno}) : {e.message}")
+            logger.error(f"Erreur de syntaxe ({e.filename}, ligne {
+                         e.lineno}) : {e.message}")
             sys.exit(3)
-        return template_file.render(SESSION=SESSION, REQUEST_VARS=REQUEST_VARS, GET=GET, POST=POST)  # execute template file
+        # execute template file
+        return template_file.render(SESSION=SESSION, REQUEST_VARS=REQUEST_VARS, GET=GET, POST=POST)
 
     def match_url(self):
         """
         Process an URL for building a response: direct file, path fully matching a route, first component matching a route, or 404 error
         """
-        url_path = self.path[1:]  #  remove leading slash
+        url_path = self.path[1:]  # remove leading slash
         url_components = url_path.split('/')
         if path.isfile(url_path):  # file on the filesystem (image, css, etc.)
             rawfile = open(url_path, 'rb').read()
@@ -91,15 +97,18 @@ class WebHandler(BaseHTTPRequestHandler):
             html_content = self.match_route(url_path)
             self._set_response()
             self.wfile.write(html_content.encode('utf-8'))
-        elif len(url_components) > 0 and url_components[0] in WebHandler._routes:  # load a route (first component matching)
+        # load a route (first component matching)
+        elif len(url_components) > 0 and url_components[0] in WebHandler._routes:
             global REQUEST_VARS
-            REQUEST_VARS['url_components'] = url_components  # components may be used by controllers and views
+            # components may be used by controllers and views
+            REQUEST_VARS['url_components'] = url_components
             html_content = self.match_route(url_components[0])
             self._set_response()
             self.wfile.write(html_content.encode('utf-8'))
         else:  # error 404
             logger.error(f"Error 404: unable to retrieve file {url_path}")
-            SimpleHTTPRequestHandler.send_error(self, 404, "Aucune route/fichier ne correspond à l'URL demandée.")
+            SimpleHTTPRequestHandler.send_error(
+                self, 404, "Aucune route/fichier ne correspond Ã  l'URL demandÃ©e.")
 
     def reinit_global_variables(self):
         """
@@ -128,9 +137,12 @@ class WebHandler(BaseHTTPRequestHandler):
         """
         self.reinit_global_variables()
         global POST
-        content_length = int(self.headers['Content-Length']) # size of POST data
-        post_data = self.rfile.read(content_length).decode('utf-8') # POST data
-        url_parts = urlparse('http://' + self.client_address[0] + self.path + '?' + post_data)
+        # size of POST data
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(
+            content_length).decode('utf-8')  # POST data
+        url_parts = urlparse(
+            'http://' + self.client_address[0] + self.path + '?' + post_data)
         logger.debug(url_parts)
         POST = parse_qs(url_parts.query)
         self.match_url()
@@ -147,30 +159,38 @@ class WebServer(HTTPServer):
         # check directory to serve
         self.directory = directory
         if self.directory is None or not path.isdir(self.directory):
-            logger.error(f"Directory {self.directory} does not exist (or is not readable).")
+            logger.error(
+                f"Directory {self.directory} does not exist (or is not readable).")
             sys.exit(1)
         SESSION['DIRECTORY'] = directory
-        sys.path.append(self.directory)  # served directory is added to path for searching packages
+        # served directory is added to path for searching packages
+        sys.path.append(self.directory)
         # check routing
         self.routes_file = kwargs.get('routes_file')
         routes = self.extract_routes_from_file(self.routes_file)  # load routes
         handler._routes = routes
         # check and load database config file
-        self.config_file = kwargs.get('config_file')  # database config
-        config = self.load_toml(self.config_file)
-        self.connect_database(config)  # connect to PostgreSQL using config
+        self.no_db = kwargs.get('no_db')  # True if not using database
+        if self.no_db is False:  # load DB config
+            self.config_db_file = kwargs.get(
+                'config_db_file')  # database config
+            config = self.load_toml(self.config_db_file)
+            self.connect_database(config)  # connect to PostgreSQL using config
         # check and execute init_file
         self.init_file = kwargs.get('init_file')
         check_init = self.check_exists_file(self.init_file)
         if check_init:  # execute init file
             with open(self.init_file) as infile:
-                exec(infile.read())  # security issues, but we assume that the script is run locally only
+                # security issues, but we assume that the script is run locally only
+                exec(infile.read())
         # setup jinja templates
         self.env = Environment(  # class variable for template environment (based on Jinja)
-            loader=FileSystemLoader([kwargs.get('templates_dir', self.directory), self.directory + '/templates', ]),
+            loader=FileSystemLoader(
+                [kwargs.get('templates_dir', self.directory), self.directory + '/templates', ]),
             autoescape=select_autoescape()
         )
-        self.env.globals['url_for'] = self.url_for  # function that can be called within template
+        # function that can be called within template
+        self.env.globals['url_for'] = self.url_for
         super().__init__(address, handler)
 
     def url_for(self, static_file):
@@ -205,7 +225,8 @@ class WebServer(HTTPServer):
             logger.info(f"Chargement du fichier {filepath} : ok")
             return True
         else:
-            logger.warning(f"Le fichier {filepath} n'existe pas (ou non-readable).")
+            logger.warning(
+                f"Le fichier {filepath} n'existe pas (ou non-readable).")
         return False
 
     def extract_routes_from_file(self, routes_file):
@@ -226,10 +247,12 @@ class WebServer(HTTPServer):
             controleur_filepath = path.join(self.directory, controleur)
             template_filepath = path.join(self.directory, template)
             if not path.isfile(controleur_filepath):
-                logger.warning(f"Le fichier {controleur_filepath} (pour la route {url}) n'existe pas !")
+                logger.warning(
+                    f"Le fichier {controleur_filepath} (pour la route {url}) n'existe pas !")
             else:
                 output_routes[url] = (controleur_filepath, template)
-        logger.info(f"Fichier {routes_file} : {len(output_routes)} routes trouvées")
+        logger.info(f"Fichier {routes_file} : {
+                    len(output_routes)} routes trouvÃ©es")
         return output_routes
 
     def get_connexion(self, host, username, password, db, schema, port):
@@ -243,9 +266,12 @@ class WebServer(HTTPServer):
         Returns: a database connection object (link), or None
         """
         try:
-            connexion = psycopg.connect(host=host, user=username, password=password, dbname=db, port=port, autocommit=True)
-            cursor = psycopg.ClientCursor(connexion)  # client-side cursor (because of the SET query)
-            cursor.execute("SET search_path TO %s", [schema])  # set path to database schema
+            connexion = psycopg.connect(
+                host=host, user=username, password=password, dbname=db, port=port, autocommit=True)
+            # client-side cursor (because of the SET query)
+            cursor = psycopg.ClientCursor(connexion)
+            # set path to database schema
+            cursor.execute("SET search_path TO %s", [schema])
         except Exception as e:
             print(e)
             return None
@@ -258,9 +284,11 @@ class WebServer(HTTPServer):
         Returns: True (or exit with code 2 on error)
         """
         global SESSION
-        connexion = self.get_connexion(config['POSTGRESQL_SERVER'], config['POSTGRESQL_USER'], config['POSTGRESQL_PASSWORD'], config['POSTGRESQL_DATABASE'], config.get('POSTGRESQL_SCHEMA', 'public'), config.get('POSTGRESQL_PORT', 5432))
+        connexion = self.get_connexion(config['POSTGRESQL_SERVER'], config['POSTGRESQL_USER'], config['POSTGRESQL_PASSWORD'],
+                                       config['POSTGRESQL_DATABASE'], config.get('POSTGRESQL_SCHEMA', 'public'), config.get('POSTGRESQL_PORT', 5432))
         if connexion is None:
-            logger.error("Erreur de connexion au SGBD. Vérifiez les paramètres saisis dans le fichier de configuration toml.")
+            logger.error(
+                "Erreur de connexion au SGBD. VÃ©rifiez les paramÃ¨tres saisis dans le fichier de configuration toml.")
             sys.exit(2)
         else:
             logger.info("Connexion au SGBD PostgreSQL : ok")
@@ -279,12 +307,19 @@ class WebServer(HTTPServer):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('directory', help='website directory that the server will serve')
-    parser.add_argument('-c', '--config', default="config-bd.toml", help='filepath of the required database configuration TOML file (default config-bd.toml)')
-    parser.add_argument('-i', '--init', default=argparse.SUPPRESS, help='filepath of an optional init python file, executed once at startup (default <directory>/init.py)')
-    parser.add_argument('-p', '--port', default=4242, type=int, help='port on which web server listens')
-    parser.add_argument('-r', '--routes', default=argparse.SUPPRESS, help='filepath of the required routes TOML file (default <directory>/routes.tml)')
-    parser.add_argument('-t', '--templates', default=argparse.SUPPRESS, help='filepath of an additional templates directory')
+    parser.add_argument(
+        'directory', help='website directory that the server will serve')
+    parser.add_argument('-c', '--config-db', default="config-bd.toml",
+                        help='filepath of the required database configuration TOML file (default config-bd.toml)')
+    parser.add_argument('-i', '--init', default=argparse.SUPPRESS,
+                        help='filepath of an optional init python file, executed once at startup (default <directory>/init.py)')
+    parser.add_argument('-n', '--no-db', action='store_true')
+    parser.add_argument('-p', '--port', default=4242, type=int,
+                        help='port on which web server listens')
+    parser.add_argument('-r', '--routes', default=argparse.SUPPRESS,
+                        help='filepath of the required routes TOML file (default <directory>/routes.tml)')
+    parser.add_argument('-t', '--templates', default=argparse.SUPPRESS,
+                        help='filepath of an additional templates directory')
     args = parser.parse_args()
     if 'routes' not in args:  # if no route file, default value set to <directory>/routes.toml
         args.routes = path.join(args.directory, 'routes.toml')
@@ -293,27 +328,30 @@ if __name__ == '__main__':
     if 'templates' not in args:  # if no template directory, default value set to <directory>/templates/
         args.templates = path.join(args.directory, 'templates')
 
-    server_address = ('', args.port)
+    # '127.0.0.1' ('' is for all interfaces)
+    server_address = ('127.0.0.1', args.port)
     while True:
         try:
-            httpd = WebServer(server_address, WebHandler, directory=args.directory, routes_file=args.routes, config_file= args.config, init_file=args.init, templates_dir=args.templates)
-            logger.info(f"Démarrage du serveur httpd pour exposer {args.directory}...")
-            logger.info(f"Redémarrez ou quitter le serveur avec Ctrl-C. Mais vous devez arrêter puis relancer le serveur si vous modifiez un fichier du modèle, le fichier de routes ou celui d'initialisation.")
+            httpd = WebServer(server_address, WebHandler, directory=args.directory, routes_file=args.routes, config_db_file=args.config_db,
+                              # dashes (no-db) are converted into underscores (no_db)
+                              init_file=args.init, templates_dir=args.templates, no_db=args.no_db)
+            logger.info(f"DÃ©marrage du serveur httpd pour exposer {
+                        args.directory}...")
+            logger.info(f"RedÃ©marrez ou quitter le serveur avec Ctrl-C. Mais vous devez arrÃªter puis relancer le serveur si vous modifiez un fichier du modÃ¨le, le fichier de routes ou celui d'initialisation.")
             logger.info(f"Allez sur http://localhost:{args.port}/")
             httpd.serve_forever()
         except KeyboardInterrupt:
             try:
-                logger.info("Redémarrage du serveur dans 2 secondes...")
-                logger.info("Appuyer sur Ctrl-C à nouveau pour quitter.")
+                logger.info("RedÃ©marrage du serveur dans 2 secondes...")
+                logger.info("Appuyer sur Ctrl-C Ã  nouveau pour quitter.")
                 sleep(1)
-                # suppression du cache (répertoires __pycache__, notamment dans le modèle) avant redémarrage
-                # pas suffisant: ex, fichiers modèle aussi chargés en mémoire (import par controleurs) 
+                # suppression du cache (rÃ©pertoires __pycache__, notamment dans le modÃ¨le) avant redÃ©marrage
+                # pas suffisant: ex, fichiers modÃ¨le aussi chargÃ©s en mÃ©moire (import par controleurs)
                 for p in pathlib.Path(args.directory).rglob('__pycache__'):
-                    logger.info(f"Suppression du répertoire de cache {p}")
+                    logger.info(f"Suppression du rÃ©pertoire de cache {p}")
                     rmtree(p, True)
                 httpd.server_close()
             except KeyboardInterrupt:  # exit
                 break
-    logger.info('Arrêt du server httpd.')
+    logger.info('ArrÃªt du server httpd.')
     httpd.server_close()
-
