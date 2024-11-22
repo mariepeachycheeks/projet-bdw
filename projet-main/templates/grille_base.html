@@ -1,0 +1,12 @@
+{% extends "base.html" %} {% block main_content %}
+<body>
+  <div class="grid-container">
+    {% for target in grid %} {% if target > 0 %}
+    <div class="grid-item target"></div>
+    {% else %}
+    <div class="grid-item"></div>
+    {% endif %} {% endfor %}
+  </div>
+</body>
+
+{% include 'message.html' %} {% endblock %}
