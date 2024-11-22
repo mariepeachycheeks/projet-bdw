@@ -11,7 +11,7 @@ template = "accueil.html"
 [[routes]]
 url = "grille"
 controleur = "controleurs/grille.py"
-#template = "grille.html"
+template = "grille.html"
 
 #[[routes]]
 #url = "rechercher"
