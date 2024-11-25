@@ -144,6 +144,9 @@ font-size: 25px;
     gap: 2px; /* Espacement entre les cellules */
     background-color: #ddd;
 }
+.grid-row {
+    display: flex;
+  }
 
 .grid-item {
     width: 50px;
@@ -152,7 +155,7 @@ font-size: 25px;
     border: 1px solid #ccc;
 }
 
-.target {
+.grid-item.target {
     background: repeating-linear-gradient(
         45deg,
         #cfcfcf,
