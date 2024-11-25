@@ -1,12 +1,17 @@
 {% extends "base.html" %} {% block main_content %}
 <body>
+  <h1>Génération d'une grille aléatoire</h1>
+
   <div class="grid-container">
-    {% for target in grid %} {% if target > 0 %}
-    <div class="grid-item target"></div>
-    {% else %}
-    <div class="grid-item"></div>
-    {% endif %} {% endfor %}
+    {% for row in SESSION['grid'] %}
+    <div class="grid-row">
+      {% for cell in row %} {% if cell == "target" %}
+      <div class="grid-item target">t</div>
+      {% else %}
+      <div class="grid-item">e</div>
+      {% endif %} {% endfor %}
+    </div>
+    {% endfor %}
   </div>
 </body>
-
 {% include 'message.html' %} {% endblock %}
