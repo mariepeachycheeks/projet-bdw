@@ -1,4 +1,4 @@
-import random
+
 from model.model_pg import get_instances, get_episodes_for_num
 
 
@@ -8,13 +8,13 @@ from model.model_pg import get_instances, get_episodes_for_num
 # add_activity(SESSION['HISTORIQUE'], "affichage des données")
 
 '''Fonctionnalité 2'''
+'''
 
+REQUEST_VARS['piece'] = get_random_brick(SESSION['CONNEXION'])
 
-'''REQUEST_VARS['piece'] = get_random_brick(SESSION['CONNEXION'])
-
- if piece is None:
+ if REQUEST_VARS['piece']  is None:
         logger.warning("Il y a plus de bricks dans BD")
-        return []
+       #return []
 
 
 
@@ -29,12 +29,9 @@ else:
     logger.error("Selected brick ID is missing.")
 '''
 
+'''pioche = []
 
-'''doma screen '''
-'''
-pioche = []
-
-REQUEST_VARS['piece'] = b
+REQUEST_VARS['piece']
 
 
 if b is None:
@@ -51,11 +48,11 @@ if 'pioche' not in SESSION:
 
             SESSION['pioche'].remove(b)
 
-    SESSION['pioche'].extend(get_random_brick(SESSION['CONNEXION'], 1))
-    '''
+    SESSION['pioche'].extend(get_random_brick(SESSION['CONNEXION'], 1))'''
 
 
 def generate_random_grid(width, height):
+    import random
     total_cells = width * height
 
     # Le nombre de cases cibles est un nombre aléatoire compris entre 10% et 20% du nombre total de cases ;
@@ -98,23 +95,33 @@ def generate_random_grid(width, height):
     return grid
 
 
-"""Fonctionnalité 4"""
-
+print(POST)
 if POST and "submit" in POST:
 
-    width = POST["width"]
+    width = int(POST["width"][0])
+    height = int(POST["height"][0])
 
-    height = POST["height"]
+    print(width, height)
 
-    grid = generate_random_grid(width, height)
+    SESSION['grid'] = generate_random_grid(width, height)
 
-    print(grid)
+    print(SESSION['grid'])
+
+    '''
 
 
-'''Pour chaque case cible à ajouter, choisir une direction aléatoire(parmi haut, bas, gauche, droite) et vérifier
+
+
+
+"""Fonctionnalité 4"""
+
+
+
+'
+"""''Pour chaque case cible à ajouter, choisir une direction aléatoire(parmi haut, bas, gauche, droite) et vérifier
 si la case correspondante(première case cible + direction choisie) est valide(i.e., dans la grille et case
 vide): si oui, la transformer en case cible et répéter, sinon choisir une autre direction; '''
 
 
 '''Gérer les situations exceptionnelles(e.g., pas suffisamment de cases cibles car le motif est en forme de
-           # ”spirale”).'''
+           # ”spirale”).'''""
