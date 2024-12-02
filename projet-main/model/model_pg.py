@@ -201,91 +201,15 @@ def get_table_like(connexion, nom_table, like_pattern):
 # easy level for small breaks
 
 
-def get_random_bricks(connexion):
-    try:
-        query = "SELECT * FROM legos.piece WHERE length <= %s OR width <= %s"
-        params = [2, 2]
-        bricks = execute_select_query(connexion, query, params)
-
-        if not bricks:
-            logger.warning(
-                "Aucune brique valide n'a été trouvée dans la base de données.")
-            return []
-
-        # Retourner un nombre aléatoire limité de briques (max_briques)
-        return random.sample(bricks, 4, 4)
-    except Exception as e:
-        logger.error(f"Erreur lors de la récupération des briques: {e}")
-        return []
 
 
-'''
-#controleur
+def get_random_brick(connexion):
 
-    if bricks is None:
-        logger.warning("Il y a plus de bricks dans BD")
-        return []
+    query= "SELECT * FROM piece WHERE longueur <= %s OR largeur <= %s ORDER BY random() LIMIT 1;" 
+    print(query)
+    params = [2, 2]
 
-    if len(bricks) >= 4:
-        return random.sample(bricks, 4)
+    
+    brick = execute_select_query(connexion, query, params)
 
-'''
-
-
-def initialize_pioche(connexion, nombre_briques=4):
-    """
-    Remplir la pioche avec des briques valides, choisies aléatoirement.
-    La pioche est initialisée avec un nombre de briques aléatoires qui respectent
-    les conditions de largeur ou longueur <= 2.
-
-    :param connexion: Connexion à la base de données
-    :param nombre_briques: Le nombre de briques à ajouter dans la pioche
-    """
-    pioche = []
-    try:
-        while len(pioche) < nombre_briques:
-            bricks = get_random_bricks(connexion)
-            if bricks:
-                pioche.extend([brick['id'] for brick in bricks])
-        logger.info(f"Pioche initialisée avec {len(pioche)} briques.")
-    except Exception as e:
-        logger.error(f"Error initializing the pioche: {e}")
-    return pioche
-
-
-def replace_selected_brick(connexion, selected_id):
-    """
-    Remplace une brique sélectionnée par une autre brique avec length <= 2 ou width <= 2.
-    La brique remplacée est exclue de la sélection grâce à son ID.
-    """
-    try:
-        query = "SELECT * FROM piece WHERE (longueur <= %s OR largeur <= %s) AND id != %s"
-        params = [2, 2, selected_id]
-
-        bricks = execute_select_query(connexion, query, params)
-
-        if bricks is None or len(bricks) == 0:
-            logger.warning(
-                f"No valid bricks found to replace the brick with ID {selected_id}.")
-            return None
-
-        new_brick = random.choice(bricks)
-
-        pioche.append(new_brick['id'])
-
-        # Retirer l'ID de la brique remplacée
-        if selected_id in pioche:
-            pioche.remove(selected_id)
-
-        # Retourner la nouvelle brique
-        return new_brick
-
-    except Exception as e:
-        logger.error(e)
-        return None
-
-
-'''Fonctionnalité 4'''
-
-'''
-       '''
+    return brick
