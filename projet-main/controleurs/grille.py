@@ -2,53 +2,25 @@
 from model.model_pg import get_instances, get_episodes_for_num
 
 
-# from controleurs.includes import add_activity
-
-
-# add_activity(SESSION['HISTORIQUE'], "affichage des données")
-
-'''Fonctionnalité 2'''
-'''
-
-REQUEST_VARS['piece'] = get_random_brick(SESSION['CONNEXION'])
-
- if REQUEST_VARS['piece']  is None:
-        logger.warning("Il y a plus de bricks dans BD")
-       #return []
 
 
 
-initialize_pioche(SESSION['CONNEXION'], 4)
-
-selected_id = REQUEST_VARS['selected_id']
-
-if selected_id:
-    REQUEST_VARS['piece'] = replace_selected_brick(
-        SESSION['CONNEXION'], selected_id)
-else:
-    logger.error("Selected brick ID is missing.")
-'''
-
-'''pioche = []
-
-REQUEST_VARS['piece']
 
 
-if b is None:
-    logger.warning("Il y a plus de bricks dans BD")
-    # return []
 
 
-if 'pioche' not in SESSION:
-    SESSION['pioche'] = get_random_brick(SESSION['CONNEXION'], 4)
 
-    if form_submitted:
 
-        if b in SESSION['pioche']:
 
-            SESSION['pioche'].remove(b)
 
-    SESSION['pioche'].extend(get_random_brick(SESSION['CONNEXION'], 1))'''
+
+
+
+
+
+
+
+
 
 
 def generate_random_grid(width, height):
@@ -57,7 +29,7 @@ def generate_random_grid(width, height):
 
     # Le nombre de cases cibles est un nombre aléatoire compris entre 10% et 20% du nombre total de cases ;
     num_targets = random.randint(
-        int(0.1 * total_cells), int(0.2 * total_cells))
+        int(0.2 * total_cells), int(0.3 * total_cells))
 
     # Initialiser une grille vide
     grid = [["empty" for _ in range(width)] for _ in range(height)]
@@ -98,30 +70,93 @@ def generate_random_grid(width, height):
 print(POST)
 if POST and "submit" in POST:
 
-    width = int(POST["width"][0])
-    height = int(POST["height"][0])
+    SESSION['width'] = int(POST["width"][0])
+    SESSION['height'] = int(POST["height"][0])
 
-    print(width, height)
+    print(SESSION['width'], SESSION['height'])
 
-    SESSION['grid'] = generate_random_grid(width, height)
+    SESSION['grid'] = generate_random_grid(SESSION['width'], SESSION['height'])
 
     print(SESSION['grid'])
 
-    '''
+if POST and "play" in POST:
+    # Initialize 'checkedboxes' if not in session
+    if 'checkedboxes' not in SESSION:
+        SESSION['checkedboxes'] = []
+    
+    # Now append the checked boxes from POST
+    if "checkbox" in POST:
+        for item in POST["checkbox"]:
+            SESSION['checkedboxes'].append(item)
+    else:
+        print("No checkboxes selected.")
+        
+    print(SESSION['checkedboxes'])  # Debugging output
 
 
 
+    # Check if any checkboxes were selected
+    # checked_boxes = request.POST.getlist("checkbox")  # Safely handle multiple values
 
 
-"""Fonctionnalité 4"""
+# REQUEST_VARS['cases'] = POST["checkboxes"]
+
+# print(REQUEST_VARS['cases'])
 
 
+def check_largeur_longeur(brique_longeur, brique_largeur, liste_coordinates):
+    # Ensure there are no non-adjacent boxes in the list
+    checked_set = set(liste_coordinates)
 
-'
-"""''Pour chaque case cible à ajouter, choisir une direction aléatoire(parmi haut, bas, gauche, droite) et vérifier
-si la case correspondante(première case cible + direction choisie) est valide(i.e., dans la grille et case
-vide): si oui, la transformer en case cible et répéter, sinon choisir une autre direction; '''
+    # Check if all coordinates in a row are contiguous horizontally
+    def check_horizontal_adjacency():
+        for y in range(max_y + 1):  # For each row
+            row_coordinates = [x for x, y_coord in checked_set if y_coord == y]
+            row_coordinates.sort()
+
+            # Ensure the row coordinates are contiguous
+            for i in range(len(row_coordinates) - 1):
+                if row_coordinates[i] + 1 != row_coordinates[i + 1]:
+                    return False  # Found a gap between coordinates
+            if len(row_coordinates) >= brique_longeur:
+                return True  # Found a valid horizontal placement
+        return False
+
+    # Check if all coordinates in a column are contiguous vertically
+    def check_vertical_adjacency():
+        for x in range(max_x + 1):  # For each column
+            col_coordinates = [y for x_coord, y in checked_set if x_coord == x]
+            col_coordinates.sort()
+
+            # Ensure the column coordinates are contiguous
+            for i in range(len(col_coordinates) - 1):
+                if col_coordinates[i] + 1 != col_coordinates[i + 1]:
+                    return False  # Found a gap between coordinates
+            if len(col_coordinates) >= brique_largeur:
+                return True  # Found a valid vertical placement
+        return False
+
+    if not liste_coordinates:
+        return False
+
+    # Determine the grid dimensions
+    max_x = max(coord[0] for coord in liste_coordinates)
+    max_y = max(coord[1] for coord in liste_coordinates)
+
+    # Ensure the checked boxes are contiguous either horizontally or vertically
+    if check_horizontal_adjacency() or check_vertical_adjacency():
+        return True
+    return False
 
 
-'''Gérer les situations exceptionnelles(e.g., pas suffisamment de cases cibles car le motif est en forme de
-           # ”spirale”).'''""
+def check_brique(brique_longeur, brique_largeur, liste_coordinates):
+    nmbr_briques = len(liste_coordinates)
+    if (nmbr_briques !=brique_longeur*brique_largeur):
+        return False
+    x = []
+    y = []
+    for coord in liste_coordinates:
+        x.append(coord[0])
+
+    
+
