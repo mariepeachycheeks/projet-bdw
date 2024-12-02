@@ -1,17 +1,64 @@
 {% extends "base.html" %} {% block main_content %}
-<body>
-  <h1>Génération d'une grille aléatoire</h1>
 
-  <div class="grid-container">
+<h1>Génération d'une grille aléatoire</h1>
+
+<style>
+  .grid-container {
+    border-collapse: collapse;
+    margin: auto;
+    text-align: center;
+  }
+
+  .grid-row {
+    height: 50px;
+  }
+
+  .grid-item {
+    width: 50px;
+    height: 50px;
+    border: 1px solid black;
+  }
+
+  .grid-item.target {
+    background-color: lightblue;
+  }
+
+  input[type="checkbox"] {
+    transform: scale(1.2);
+  }
+</style>
+
+<form method="POST" action="/submit-checkboxes">
+  <table class="grid-container">
+    {% set counters = {'j': 1} %}
+    <!-- Initialize row counter -->
     {% for row in SESSION['grid'] %}
-    <div class="grid-row">
+    <tr class="grid-row">
+      {% set counters = counters.update({'i': 1}) or counters %}
+      <!-- Initialize column counter -->
       {% for cell in row %} {% if cell == "target" %}
-      <div class="grid-item target">t</div>
-      {% else %}
-      <div class="grid-item">e</div>
-      {% endif %} {% endfor %}
-    </div>
+      <td class="grid-item target">
+        <input
+          type="checkbox"
+          name="checkbox"
+          id="{{ counters['i'] }},{{ counters['j'] }}"
+          value="{{ counters['i'] }},{{ counters['j'] }}"
+        />
+        {% if SESSION['checkedboxes'] and (counters['i'] ~ ',' ~ counters['j'])
+        in SESSION['checkedboxes'] %} checked {% endif %} {% else %}
+      </td>
+
+      <td class="grid-item"></td>
+      {% endif %} {% set counters = counters.update({'i': counters['i'] + 1}) or
+      counters %}
+      <!-- Increment column counter -->
+      {% endfor %} {% set counters = counters.update({'j': counters['j'] + 1})
+      or counters %}
+      <!-- Increment row counter -->
+    </tr>
     {% endfor %}
-  </div>
-</body>
+  </table>
+  <input name="play" type="submit" value="Play" />
+</form>
+
 {% include 'message.html' %} {% endblock %}
