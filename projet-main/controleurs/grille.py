@@ -2,24 +2,19 @@
 from model.model_pg import get_instances, get_episodes_for_num
 
 
+pioche = []
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Check if 'pioche' is already in the session
+if 'pioche' not in SESSION:
+    # Call the get_random_brick function 4 times to get 4 bricks
+    for _ in range(4):
+        brick = get_random_brick(SESSION['CONNEXION'])  # Fetch one random brick
+        pioche.append(brick)  # Add the brick to the list
+    
+    # Store the list of 4 bricks in the session
+    SESSION['pioche'] = pioche
+ 
+    
 
 
 
