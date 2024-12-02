@@ -18,10 +18,10 @@ url = "generate"
 controleur = "controleurs/grille.py"
 template = "grille_base.html"
 
-#[[routes]]
-#url = "historique"
-#controleur = "controleurs/historique.py"
-#template = "historique.html"
+[[routes]]
+url = "submit-checkboxes"
+controleur = "controleurs/grille.py"
+template = "grille_base.html"
 
 #[[routes]]
 #url = "ajouter"
