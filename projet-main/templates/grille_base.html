@@ -61,4 +61,24 @@
   <input name="play" type="submit" value="Play" />
 </form>
 
+<form method="POST">
+  <label for="brique">Choose a session:</label>
+  <br>
+  <!-- Radio buttons for each "brique" -->
+  {% for brique in SESSION['pioche'] %}
+    
+      <label>
+          <input type="radio" name="id" value="{{ brique }}" {% if brique == id %}checked{% endif %}>
+          {{ brique }}
+      </label>
+   
+      <br>
+  {% endfor %}
+  
+  <br>
+  <!-- Submit buttons -->
+  <input type="submit" name="select" value="Select">
+  <input type="submit" name="change" value="Change">
+</form>
+
 {% include 'message.html' %} {% endblock %}
