@@ -1,0 +1,67 @@
+{% extends "base.html" %} {% block main_content %}
+
+<h1>Génération d'une grille aléatoire</h1>
+
+  <!-- Score Display -->
+  <div class="score-display">
+    <span class="score-label">Score:</span>
+    <span class="score-value">{{ SESSION['score'] }}</span>
+  </div>
+
+  <form method="POST" action="/submit-checkboxes">
+    <table class="grid-container">
+      {% set counters = {'j': 1} %}
+      <!-- Initialize row counter -->
+      {% for row in SESSION['grid'] %}
+      <tr class="grid-row">
+        {% set counters = counters.update({'i': 1}) or counters %}
+        <!-- Initialize column counter -->
+        {% for cell in row %} {% if cell == "target" %}
+        <td class="grid-item target">
+          <input
+            type="checkbox"
+            name="checkbox"
+            id="{{ counters['i'] }},{{ counters['j'] }}"
+            value="{{ counters['i'] }},{{ counters['j'] }}"
+          />
+          {% if SESSION['checkedboxes'] and (counters['i'] ~ ',' ~
+          counters['j']) in SESSION['checkedboxes'] %} checked {% endif %} {%
+          else %}
+        </td>
+
+        <td class="grid-item"></td>
+        {% endif %} {% set counters = counters.update({'i': counters['i'] + 1})
+        or counters %}
+        <!-- Increment column counter -->
+        {% endfor %} {% set counters = counters.update({'j': counters['j'] + 1})
+        or counters %}
+        <!-- Increment row counter -->
+      </tr>
+      {% endfor %}
+    </table>
+    <label for="brique">Choose a session:</label>
+    <br />
+    <!-- Radio buttons for each "brique" -->
+    {% for brique in SESSION['pioche'] %}
+
+    <label>
+      <input
+        type="radio"
+        name="brique"
+        id="{{ brique }}"
+        value="{{ brique[0] }}"
+      />
+      {{brique}}
+    </label>
+
+    <br />
+    {% endfor %}
+
+    <br />
+    <!-- Submit buttons -->
+    <input type="submit" name="select" value="Select" />
+    <input type="submit" name="change" value="Change" />
+  </form>
+
+  {% include 'message.html' %} {% endblock %}
+</div>
