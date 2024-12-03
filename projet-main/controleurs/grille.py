@@ -1,6 +1,5 @@
-
-from model.model_pg import get_instances, get_episodes_for_num
-
+from model.model_pg import get_random_brick,  get_instances, insert_joueuse, insert_partie
+from datetime import datetime
 
 pioche = []
 
@@ -13,6 +12,8 @@ if 'pioche' not in SESSION:
     
     # Store the list of 4 bricks in the session
     SESSION['pioche'] = pioche
+
+    print(SESSION['pioche'] )
  
     
 
@@ -62,36 +63,126 @@ def generate_random_grid(width, height):
     return grid
 
 
+
+def check_brique(brique_longeur, brique_largeur, liste_coordinates):
+    nmbr_briques = len(liste_coordinates)
+    if (nmbr_briques !=brique_longeur*brique_largeur):
+        print('nmbr_briques !=brique_longeur*brique_largeur')
+        return False 
+    
+    parsed_coordinates = [tuple(map(int, coord.split(","))) for coord in liste_coordinates]
+    max_x = max(coord[0] for coord in parsed_coordinates)
+    max_y = max(coord[1] for coord in parsed_coordinates)
+    min_x = min(coord[0] for coord in parsed_coordinates)
+    min_y = min(coord[1] for coord in parsed_coordinates)
+    dx = max_x - min_x +1
+    dy = max_y - min_y +1
+    print(dx, dy)
+    if (dx!= brique_longeur) or (dy != brique_largeur):
+        print('(dx!= brique_longeur) or (dy != brique_largeur)')
+        return False
+    if (dx*dy != nmbr_briques):
+        print('(dx*dy != nmbr_briques)')
+        return False
+    return True
+
+REQUEST_VARS['liste_joueuse'] = []
+joueueses = get_instances(SESSION['CONNEXION'], 'joueuse')
+for i in joueueses:
+    REQUEST_VARS['liste_joueuse'].append(i[0])
+print(REQUEST_VARS['liste_joueuse'])
+
+
+
 print(POST)
 if POST and "submit" in POST:
 
     SESSION['width'] = int(POST["width"][0])
     SESSION['height'] = int(POST["height"][0])
 
-    print(SESSION['width'], SESSION['height'])
+    if "Name" in POST and POST["Name"]:
+        SESSION['joueuse'] = POST["Name"]
+        insert_joueuse(SESSION['CONNEXION'], SESSION['joueuse'], str(datetime.now()))
+
+    elif "joueuses" in POST and POST["joueuses"]:
+        SESSION['joueuse'] = POST["joueuses"]
+
+    #print(SESSION['width'], SESSION['height'])
 
     SESSION['grid'] = generate_random_grid(SESSION['width'], SESSION['height'])
-
+    SESSION['nombre_target'] = 0
+    for row in SESSION['grid']:
+        for item in row:
+            if item == "target":
+                SESSION['nombre_target']+=1
+    
     print(SESSION['grid'])
+    print("Nombre target ")
+    print (SESSION['nombre_target'])
+    if 'date_debut' not in SESSION:
+        SESSION['date_debut'] = str(datetime.now())
+    print(SESSION['date_debut'])
 
-if POST and "play" in POST:
+
+
+
+
+
+
+if POST and "select" in POST:
+
+
+    if 'score' not in SESSION:
+        SESSION['score'] = 0
+
     # Initialize 'checkedboxes' if not in session
     if 'checkedboxes' not in SESSION:
         SESSION['checkedboxes'] = []
-    
+
+    liste_checkbox  =[]
     # Now append the checked boxes from POST
     if "checkbox" in POST:
         for item in POST["checkbox"]:
-            SESSION['checkedboxes'].append(item)
+            liste_checkbox.append(item)
+            #SESSION['checkedboxes'].append(item)
     else:
         print("No checkboxes selected.")
         
     print(SESSION['checkedboxes'])  # Debugging output
 
+    SESSION['selected_brique'] = POST['brique']
+    print('This is my brique')
+    print (POST['brique'])
+    print(SESSION['selected_brique'][0])
+    liste_brique = SESSION['selected_brique'][0].split(",")
+    longeur = int(liste_brique[1])
+    largeur = int(liste_brique[2])
+    print(longeur, largeur)
 
-
-    # Check if any checkboxes were selected
-    # checked_boxes = request.POST.getlist("checkbox")  # Safely handle multiple values
+    fit = check_brique( longeur, largeur,liste_checkbox)
+    print(fit)
+    check_game = True
+    if fit:
+        for item in POST["checkbox"]:
+             if item in SESSION['checkedboxes']:
+                check_game = False
+                SESSION['selected_brique'] = []
+        if check_game:
+            SESSION['score'] += 1
+            if "checkbox" in POST:
+                for item in POST["checkbox"]:
+                    SESSION['checkedboxes'].append(item)
+            #ici si tu gagne 
+            if len(SESSION['checkedboxes']) == SESSION['nombre_target'] :
+                print("won")
+                insert_partie(SESSION['CONNEXION'], SESSION['date_debut'], str(datetime.now()), SESSION['score'],  SESSION['joueuse'], None, None)
+                
+                
+#si tu perts
+if POST and "quit" in POST:
+   SESSION['score'] = 999
+   insert_partie(SESSION['CONNEXION'], SESSION['date_debut'], str(datetime.now()), SESSION['score'],  SESSION['joueuse'], None, None)
+   #ici il faut ajouter affichage 
 
 
 # REQUEST_VARS['cases'] = POST["checkboxes"]
@@ -144,14 +235,19 @@ def check_largeur_longeur(brique_longeur, brique_largeur, liste_coordinates):
     return False
 
 
-def check_brique(brique_longeur, brique_largeur, liste_coordinates):
-    nmbr_briques = len(liste_coordinates)
-    if (nmbr_briques !=brique_longeur*brique_largeur):
-        return False
-    x = []
-    y = []
-    for coord in liste_coordinates:
-        x.append(coord[0])
+def sontAdjacentes(a,b):
+    dx = abs(a[0] - b[0])
+    dy = abs(a[1] - b[1])
+    return (dx == 1 and dy == 0) or (dx == 0 and dy == 1)
+
+def trierBriques(liste_coordinates):
+    coordonnees_tries = sorted(liste_coordinates, key=lambda coord: (coord[1], coord[0]))
+    return coordonnees_tries
+
+
+
+
+    
 
     
 
