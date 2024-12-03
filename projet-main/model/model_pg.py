@@ -141,6 +141,22 @@ def get_instances(connexion, nom_table):
         'SELECT * FROM {table}').format(table=sql.Identifier(nom_table), )
     return execute_select_query(connexion, query)
 
+def insert_joueuse(connexion, nom_joueuse, date):
+    query = 'INSERT INTO joueuse (prenom, date_inscription) VALUES (%s, %s)'
+    params = [nom_joueuse, date]
+
+    return execute_other_query(connexion, query, params)
+
+
+
+
+
+
+def insert_partie(connexion, date_debut, date_fin, score, name, p_defaussees, p_piochees):
+    query = 'INSERT INTO partie (date_debut, date_fin, score, gagnante, p_defaussees, p_piochees) VALUES(%s,%s,%s,%s,%s,%s)'
+    params = [date_debut, date_fin, score, name, p_defaussees, p_piochees]
+    return execute_other_query(connexion, query, params )
+
 
 def get_episodes_for_num(connexion, numero):
     """
@@ -160,14 +176,6 @@ def get_serie_by_name(connexion, nom_serie):
     return execute_select_query(connexion, query, [nom_serie])
 
 
-def insert_serie(connexion, nom_serie):
-    """
-    Insère une nouvelle série dans la BD
-    String nom_serie : nom de la série
-    Retourne le nombre de tuples insérés, ou None
-    """
-    query = 'INSERT INTO series VALUES(%s)'
-    return execute_other_query(connexion, query, [nom_serie])
 
 
 def insert_critique(connexion, date_critique, pseudo, texte, nom_serie):
