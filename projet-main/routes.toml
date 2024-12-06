@@ -24,7 +24,7 @@ template = "accueil.html"
 #template = "partie.html"
 
 
-[[routes]]
+#[[routes]]
 url = "grille"
 controleur = "controleurs/grille.py"
 template = "grille.html"
