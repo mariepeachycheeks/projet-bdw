@@ -8,36 +8,15 @@ url = ""
 controleur = "controleurs/accueil.py"
 template = "accueil.html"
 
-#[[routes]]
-#url = "grille"
-#controleur = "controleurs/grille_generation.py"
-#template = "grille.html"
-
-#[[routes]]
-#url = "generate"
-#controleur = "controleurs/grille_generation.py"
-#template = "partie.html"
-
-#[[routes]]
-#url = "submit-checkboxes"
-#controleur = "controleurs/partie.py"
-#template = "partie.html"
-
-
-#[[routes]]
-url = "grille"
-controleur = "controleurs/grille.py"
-template = "grille.html"
+[[routes]]
+url = "initialisation"
+controleur = "controleurs/initialisation.py"
+template = "initialisation.html"
 
 [[routes]]
-url = "generate"
-controleur = "controleurs/grille.py"
-template = "grille_base.html"
-
-[[routes]]
-url = "submit-checkboxes"
-controleur = "controleurs/grille.py"
-template = "grille_base.html"
+url = "jouer"
+controleur = "controleurs/partie.py"
+template = "partie.html"
 
 
 #[[routes]]
