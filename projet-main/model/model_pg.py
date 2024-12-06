@@ -153,10 +153,14 @@ def insert_joueuse(connexion, nom_joueuse, date):
 
 
 def insert_partie(connexion, date_debut, date_fin, score, name, p_defaussees, p_piochees):
-    query = 'INSERT INTO partie (date_debut, date_fin, score, gagnante, p_defaussees, p_piochees) VALUES(%s,%s,%s,%s,%s,%s)'
+    query = 'INSERT INTO partie (date_debut, date_fin, score, gagnante, p_defaussees, p_piochees) VALUES(NOW(),%s,%s,%s,%s,%s)'
     params = [date_debut, date_fin, score, name, p_defaussees, p_piochees]
     return execute_other_query(connexion, query, params )
 
+def update_partie(connexion, date_debut, date_fin, score, name, p_defaussees, p_piochees):
+    query = 'UPDATE partie (date_debut, date_fin, score, gagnante, p_defaussees, p_piochees) VALUES(NOW(),%s,%s,%s,%s,%s)'
+    params = [date_debut, date_fin, score, name, p_defaussees, p_piochees]
+    return execute_other_query(connexion, query, params )
 
 def get_episodes_for_num(connexion, numero):
     """
