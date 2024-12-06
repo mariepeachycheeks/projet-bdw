@@ -1,22 +1,26 @@
+from model.model_pg import get_random_brick,  get_instances, insert_joueuse, insert_partie
+from datetime import datetime
 
-from model.model_pg import get_random_brick
-
-
-pioche = []
-
-# Check if 'pioche' is already in the session
-if 'pioche' not in SESSION:
-    # Call the get_random_brick function 4 times to get 4 bricks
-    for _ in range(4):
-        brick = get_random_brick(SESSION['CONNEXION'])  # Fetch one random brick
-        pioche.append(brick)  # Add the brick to the list
-    
-    # Store the list of 4 bricks in the session
-    SESSION['pioche'] = pioche
-
-    print(SESSION['pioche'] )
  
     
+def change_brique(briques, brique_a_supprimer):
+    from model.model_pg import get_random_brick
+    print("Original pioche:", briques)
+    print("Brique à supprimer:", brique_a_supprimer)
+
+    # Convert brique_a_supprimer to a tuple
+    brique_a_supprimer = eval(brique_a_supprimer[0])  # Convert string to tuple
+    
+    # Iterate through the nested briques
+    for i, sublist in enumerate(briques):
+        for j, brick in enumerate(sublist):
+            if brick == brique_a_supprimer:  # Compare tuples
+                print("Brique trouvée:", brick)
+                briques[i][j] = get_random_brick(SESSION['CONNEXION'])  # Replace with a new random brick
+                print("Nouvelle brique:", briques[i][j])
+
+    print("Pioche mise à jour:", briques)
+
 
 
 def check_brique(brique_longeur, brique_largeur, liste_coordinates):
@@ -42,10 +46,12 @@ def check_brique(brique_longeur, brique_largeur, liste_coordinates):
     return True
 
 
-if 'score' not in SESSION:
-    SESSION['score'] = 0
 
 if POST and "select" in POST:
+
+    if 'score' not in SESSION:
+        SESSION['score'] = 0
+
     # Initialize 'checkedboxes' if not in session
     if 'checkedboxes' not in SESSION:
         SESSION['checkedboxes'] = []
@@ -83,24 +89,28 @@ if POST and "select" in POST:
             if "checkbox" in POST:
                 for item in POST["checkbox"]:
                     SESSION['checkedboxes'].append(item)
+            #change selected brique
+            change_brique(SESSION['pioche'], POST['brique'])
+            #ici si tu gagne 
+            if len(SESSION['checkedboxes']) == SESSION['nombre_target'] :
+                print("won")
+                #changer au update_partie
+                insert_partie(SESSION['CONNEXION'], SESSION['date_debut'], str(datetime.now()), SESSION['score'],  SESSION['joueuse'], None, None)
+                
+                
+#si tu perts
+if POST and "quit" in POST:
+   SESSION['score'] = 999
+    #changer au update_partie
+   insert_partie(SESSION['CONNEXION'], SESSION['date_debut'], str(datetime.now()), SESSION['score'],  SESSION['joueuse'], None, None)
 
+   #ici il faut ajouter affichage 
 
-
-    print(SESSION['checkedboxes'])
-        #il faut changer ici le brique
-
-
-
-
-
-def sontAdjacentes(a,b):
-    dx = abs(a[0] - b[0])
-    dy = abs(a[1] - b[1])
-    return (dx == 1 and dy == 0) or (dx == 0 and dy == 1)
-
-def trierBriques(liste_coordinates):
-    coordonnees_tries = sorted(liste_coordinates, key=lambda coord: (coord[1], coord[0]))
-    return coordonnees_tries
+if POST and "change" in POST:
+    print('change')
+    print(POST['brique'])
+    change_brique(SESSION['pioche'], POST['brique'])
+    
 
 
 
