@@ -16,6 +16,23 @@ if 'pioche' not in SESSION:
     print(SESSION['pioche'] )
  
     
+def change_brique(briques, brique_a_supprimer):
+    from model.model_pg import get_random_brick
+    print("Original pioche:", briques)
+    print("Brique à supprimer:", brique_a_supprimer)
+
+    # Convert brique_a_supprimer to a tuple
+    brique_a_supprimer = eval(brique_a_supprimer[0])  # Convert string to tuple
+    
+    # Iterate through the nested briques
+    for i, sublist in enumerate(briques):
+        for j, brick in enumerate(sublist):
+            if brick == brique_a_supprimer:  # Compare tuples
+                print("Brique trouvée:", brick)
+                briques[i][j] = get_random_brick(SESSION['CONNEXION'])  # Replace with a new random brick
+                print("Nouvelle brique:", briques[i][j])
+
+    print("Pioche mise à jour:", briques)
 
 
 
@@ -172,6 +189,8 @@ if POST and "select" in POST:
             if "checkbox" in POST:
                 for item in POST["checkbox"]:
                     SESSION['checkedboxes'].append(item)
+            #change selected brique
+            change_brique(SESSION['pioche'], POST['brique'])
             #ici si tu gagne 
             if len(SESSION['checkedboxes']) == SESSION['nombre_target'] :
                 print("won")
@@ -182,9 +201,15 @@ if POST and "select" in POST:
 if POST and "quit" in POST:
    SESSION['score'] = 999
    insert_partie(SESSION['CONNEXION'], SESSION['date_debut'], str(datetime.now()), SESSION['score'],  SESSION['joueuse'], None, None)
+   SESSION['score'] = 0
+   SESSION['checkedboxes'] = []
+
    #ici il faut ajouter affichage 
 
-
+if POST and "change" in POST:
+    print('change')
+    print(POST['brique'])
+    change_brique(SESSION['pioche'], POST['brique'])
 # REQUEST_VARS['cases'] = POST["checkboxes"]
 
 # print(REQUEST_VARS['cases'])
