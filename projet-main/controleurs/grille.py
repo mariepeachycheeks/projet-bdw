@@ -210,60 +210,11 @@ if POST and "change" in POST:
     print('change')
     print(POST['brique'])
     change_brique(SESSION['pioche'], POST['brique'])
+    
 # REQUEST_VARS['cases'] = POST["checkboxes"]
 
 # print(REQUEST_VARS['cases'])
 
-
-def check_largeur_longeur(brique_longeur, brique_largeur, liste_coordinates):
-    # Ensure there are no non-adjacent boxes in the list
-    checked_set = set(liste_coordinates)
-
-    # Check if all coordinates in a row are contiguous horizontally
-    def check_horizontal_adjacency():
-        for y in range(max_y + 1):  # For each row
-            row_coordinates = [x for x, y_coord in checked_set if y_coord == y]
-            row_coordinates.sort()
-
-            # Ensure the row coordinates are contiguous
-            for i in range(len(row_coordinates) - 1):
-                if row_coordinates[i] + 1 != row_coordinates[i + 1]:
-                    return False  # Found a gap between coordinates
-            if len(row_coordinates) >= brique_longeur:
-                return True  # Found a valid horizontal placement
-        return False
-
-    # Check if all coordinates in a column are contiguous vertically
-    def check_vertical_adjacency():
-        for x in range(max_x + 1):  # For each column
-            col_coordinates = [y for x_coord, y in checked_set if x_coord == x]
-            col_coordinates.sort()
-
-            # Ensure the column coordinates are contiguous
-            for i in range(len(col_coordinates) - 1):
-                if col_coordinates[i] + 1 != col_coordinates[i + 1]:
-                    return False  # Found a gap between coordinates
-            if len(col_coordinates) >= brique_largeur:
-                return True  # Found a valid vertical placement
-        return False
-
-    if not liste_coordinates:
-        return False
-
-    # Determine the grid dimensions
-    max_x = max(coord[0] for coord in liste_coordinates)
-    max_y = max(coord[1] for coord in liste_coordinates)
-
-    # Ensure the checked boxes are contiguous either horizontally or vertically
-    if check_horizontal_adjacency() or check_vertical_adjacency():
-        return True
-    return False
-
-
-def sontAdjacentes(a,b):
-    dx = abs(a[0] - b[0])
-    dy = abs(a[1] - b[1])
-    return (dx == 1 and dy == 0) or (dx == 0 and dy == 1)
 
 def trierBriques(liste_coordinates):
     coordonnees_tries = sorted(liste_coordinates, key=lambda coord: (coord[1], coord[0]))
