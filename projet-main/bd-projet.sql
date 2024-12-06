@@ -137,7 +137,7 @@ CREATE TABLE LIER (
 
 CREATE TABLE TOURS (
     numero INT PRIMARY KEY,
-    FOREIGN KEY (date_debut, date_fin) REFERENCES PARTIE(date_debut, date_fin)
+    FOREIGN KEY (date_debut, date_fin) REFERENCES PARTIE(date_debut)
     FOREIGN KEY (id) REFERENCES piece(id)
 );
 
@@ -157,7 +157,7 @@ CREATE TABLE PARTIE (
     gagnante VARCHAR(50),
     p_defaussees INT,  ---J'ai alternée le tab initial ici
     p_piochees INT,
-    PRIMARY KEY (date_debut, date_fin)
+    PRIMARY KEY (date_debut)
 );
 
 CREATE TABLE CONFIGURATION (
@@ -170,7 +170,7 @@ CREATE TABLE POSSEDER (
     date_fin DATE,
     PRIMARY KEY (idC, date_debut, date_fin),
     FOREIGN KEY (idC) REFERENCES CONFIGURATION(idC),
-    FOREIGN KEY (date_debut, date_fin) REFERENCES PARTIE(date_debut, date_fin)
+    FOREIGN KEY (date_debut, date_fin) REFERENCES PARTIE(date_debut)
 );
 
 CREATE TABLE PROPRIETE_VALEURS (
