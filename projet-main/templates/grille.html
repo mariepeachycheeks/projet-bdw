@@ -22,6 +22,13 @@
   </select>
 
   <input name="submit" type="submit" value="Générer la grille" />
-</form>
 
+  {%if POST and "submit" in POST%}
+  <form method="POST" action="/recuperer">
+    On va generer la grille de hauteur {{SESSION['height']}} et largeur {{SESSION['width']}}  pour  {{SESSION['joueuse']}}
+    Enjoy your game
+   
+    <input type="submit" value="Démarrer la partie" />
+ </form>
+{%endif%}
 {% include 'message.html' %} {% endblock %}
